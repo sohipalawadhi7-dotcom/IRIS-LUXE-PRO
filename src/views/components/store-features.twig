@@ -1,0 +1,281 @@
+{# ============================================================
+   components/store-features.twig
+   Salla Twilight — Store Features / Benefits Bar
+   Usage: {% include 'components.store-features' %}
+   Optional: pass `features` array with { title, description, icon }
+   ============================================================ #}
+
+<section class="store-features" aria-label="{{ 'store_features'|trans|default('Store Features') }}">
+  <div class="store-features__container">
+    <div class="store-features__grid">
+
+      {% if features is defined and features is not empty %}
+        {# ---------- DYNAMIC MODE ---------- #}
+        {% for feature in features %}
+          <article class="store-features__card">
+            <div class="store-features__icon" aria-hidden="true">
+              {% if feature.icon is defined and feature.icon %}
+                <img
+                  src="{{ feature.icon }}"
+                  alt="{{ feature.title|default('') }}"
+                  loading="lazy"
+                  width="30"
+                  height="30"
+                >
+              {% else %}
+                {# Generic fallback icon: sparkle / star #}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 3l2.2 5.6L20 10.8l-5.8 2.2L12 18.6l-2.2-5.6L4 10.8l5.8-2.2z"/>
+                </svg>
+              {% endif %}
+            </div>
+
+            {% if feature.title is defined and feature.title %}
+              <h3 class="store-features__title">{{ feature.title }}</h3>
+            {% endif %}
+
+            {% if feature.description is defined and feature.description %}
+              <p class="store-features__desc">{{ feature.description }}</p>
+            {% endif %}
+          </article>
+        {% endfor %}
+
+      {% else %}
+        {# ---------- FALLBACK MODE — Luxury Defaults ---------- #}
+
+        {# 1. Free Shipping #}
+        <article class="store-features__card">
+          <div class="store-features__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 7h11v10H3z"/>
+              <path d="M14 10h4l3 3v4h-7z"/>
+              <circle cx="7" cy="18" r="1.8"/>
+              <circle cx="17" cy="18" r="1.8"/>
+            </svg>
+          </div>
+          <h3 class="store-features__title">{{ 'store_features.free_shipping'|trans|default('Free Shipping') }}</h3>
+          <p class="store-features__desc">{{ 'store_features.free_shipping_desc'|trans|default('Complimentary delivery on all orders') }}</p>
+        </article>
+
+        {# 2. 100% Authentic #}
+        <article class="store-features__card">
+          <div class="store-features__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3l7 3v6c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6z"/>
+              <path d="M9 12l2 2 4-4"/>
+            </svg>
+          </div>
+          <h3 class="store-features__title">{{ 'store_features.authentic'|trans|default('100% Authentic') }}</h3>
+          <p class="store-features__desc">{{ 'store_features.authentic_desc'|trans|default('Genuine luxury products, guaranteed') }}</p>
+        </article>
+
+        {# 3. Secure Payment #}
+        <article class="store-features__card">
+          <div class="store-features__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="10" width="16" height="10" rx="2"/>
+              <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+              <circle cx="12" cy="15" r="1.2" fill="currentColor" stroke="none"/>
+            </svg>
+          </div>
+          <h3 class="store-features__title">{{ 'store_features.secure_payment'|trans|default('Secure Payment') }}</h3>
+          <p class="store-features__desc">{{ 'store_features.secure_payment_desc'|trans|default('Encrypted checkout you can trust') }}</p>
+        </article>
+
+        {# 4. 24/7 Support #}
+        <article class="store-features__card">
+          <div class="store-features__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 13a8 8 0 0 1 16 0"/>
+              <rect x="3" y="13" width="4" height="6" rx="1.5"/>
+              <rect x="17" y="13" width="4" height="6" rx="1.5"/>
+              <path d="M20 19a3 3 0 0 1-3 3h-3"/>
+            </svg>
+          </div>
+          <h3 class="store-features__title">{{ 'store_features.support'|trans|default('24/7 Support') }}</h3>
+          <p class="store-features__desc">{{ 'store_features.support_desc'|trans|default('Always here to help you shop') }}</p>
+        </article>
+
+      {% endif %}
+
+    </div>
+  </div>
+</section>
+
+{# ============================================================
+   Scoped styles
+   ============================================================ #}
+<style>
+  .store-features {
+    --sf-gold:        #b08d57;
+    --sf-gold-dark:   #8a6a3b;
+    --sf-beige:       #faf6f0;
+    --sf-beige-deep:  #f3e9d8;
+    --sf-border:      rgba(176, 141, 87, 0.22);
+    --sf-text:        #2b2118;
+    --sf-muted:       #7a6a58;
+    --sf-card:        #ffffff;
+    --sf-radius:      16px;
+    --sf-shadow:      0 6px 24px rgba(43, 33, 24, 0.06);
+    --sf-shadow-hover:0 14px 36px rgba(176, 141, 87, 0.20);
+
+    background: var(--sf-beige);
+    padding: 48px 20px;
+    font-family: inherit;
+    color: var(--sf-text);
+  }
+
+  .store-features__container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .store-features__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  /* ---------- Card ---------- */
+  .store-features__card {
+    position: relative;
+    background: var(--sf-card);
+    border: 1px solid var(--sf-border);
+    border-radius: var(--sf-radius);
+    padding: 28px 22px;
+    text-align: center;
+    box-shadow: var(--sf-shadow);
+    overflow: hidden;
+    transition:
+      transform .35s cubic-bezier(.22,.61,.36,1),
+      box-shadow .35s ease,
+      border-color .35s ease;
+  }
+
+  /* Soft gold sheen revealed on hover */
+  .store-features__card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg,
+                rgba(176, 141, 87, 0.08),
+                rgba(176, 141, 87, 0) 55%);
+    opacity: 0;
+    transition: opacity .35s ease;
+    pointer-events: none;
+  }
+
+  .store-features__card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--sf-shadow-hover);
+    border-color: rgba(176, 141, 87, 0.55);
+  }
+
+  .store-features__card:hover::before {
+    opacity: 1;
+  }
+
+  /* ---------- Icon ---------- */
+  .store-features__icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #fffaf2, var(--sf-beige-deep));
+    color: var(--sf-gold-dark);
+    border: 1px solid var(--sf-border);
+    transition:
+      transform .35s cubic-bezier(.22,.61,.36,1),
+      background .35s ease,
+      color .35s ease,
+      border-color .35s ease;
+  }
+
+  .store-features__card:hover .store-features__icon {
+    transform: scale(1.08) rotate(-4deg);
+    background: linear-gradient(145deg, var(--sf-gold), var(--sf-gold-dark));
+    border-color: var(--sf-gold-dark);
+    color: #ffffff;
+  }
+
+  .store-features__icon svg,
+  .store-features__icon img {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    display: block;
+  }
+
+  /* ---------- Typography ---------- */
+  .store-features__title {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: .3px;
+    color: var(--sf-text);
+  }
+
+  .store-features__desc {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--sf-muted);
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 992px) {
+    .store-features__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .store-features {
+      padding: 32px 14px;
+    }
+    .store-features__card {
+      padding: 22px 14px;
+      border-radius: 14px;
+    }
+    .store-features__icon {
+      width: 54px;
+      height: 54px;
+      margin-bottom: 12px;
+    }
+    .store-features__icon svg,
+    .store-features__icon img {
+      width: 26px;
+      height: 26px;
+    }
+    .store-features__title {
+      font-size: 14px;
+    }
+    .store-features__desc {
+      font-size: 12px;
+    }
+  }
+
+  /* Respect reduced-motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .store-features__card,
+    .store-features__card::before,
+    .store-features__icon {
+      transition: none !important;
+    }
+    .store-features__card:hover {
+      transform: none;
+    }
+    .store-features__card:hover .store-features__icon {
+      transform: none;
+    }
+  }
+</style>

@@ -1,0 +1,514 @@
+{# ============================================================================
+   components/featured-products.twig
+   Featured Products / Best Sellers
+   ----------------------------------------------------------------------------
+   Usage:  {% include 'components.featured-products' %}
+
+   Optional context variables:
+     products           array   Salla product objects (Twilight product model)
+     title              string  Section heading          (default: الأكثر مبيعاً)
+     subtitle           string  Eyebrow text             (default: منتجات مختارة بعناية)
+     view_all_url       string  "View all" link          (default: #)
+     view_all_label     string  "View all" text          (default: عرض الكل)
+     add_to_cart_label  string  Cart button aria-label   (default: أضف إلى السلة)
+   ============================================================================ #}
+
+{% set has_products = products is defined and products is not empty %}
+
+{% set section_title    = title|default('الأكثر مبيعاً') %}
+{% set section_eyebrow  = subtitle|default('منتجات مختارة بعناية') %}
+{% set all_url          = view_all_url|default('#') %}
+{% set all_label        = view_all_label|default('عرض الكل') %}
+{% set add_label        = add_to_cart_label|default('أضف إلى السلة') %}
+
+<section class="featured-products" dir="rtl" aria-labelledby="fp-heading">
+  <style>
+    /* ===== Scoped styles – featured-products ===== */
+    .featured-products {
+      --fp-bronze:      #a97c50;
+      --fp-bronze-dark: #8a6238;
+      --fp-gold:        #c8a165;
+      --fp-gold-soft:   #e3cfa9;
+      --fp-beige:       #f6efe4;
+      --fp-cream:       #fdfbf7;
+      --fp-ink:         #2b2318;
+      --fp-muted:       #8b7a64;
+      --fp-line:        #ece0cf;
+      --fp-radius:      18px;
+
+      display: block;
+      padding: clamp(2.5rem, 6vw, 5rem) clamp(1rem, 4vw, 2rem);
+      direction: rtl;
+      color: var(--fp-ink);
+      background:
+        radial-gradient(120% 90% at 100% 0%, #fbf6ee 0%, transparent 55%),
+        radial-gradient(120% 90% at 0% 100%, #f7efe2 0%, transparent 55%),
+        var(--fp-cream);
+      font-family: inherit;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .featured-products *,
+    .featured-products *::before,
+    .featured-products *::after { box-sizing: border-box; }
+
+    .featured-products__inner {
+      max-width: 1280px;
+      margin-inline: auto;
+    }
+
+    /* ---------- Header ---------- */
+    .featured-products__head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+      margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    }
+
+    .featured-products__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      margin-bottom: .6rem;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--fp-bronze);
+    }
+    .featured-products__eyebrow::before {
+      content: "";
+      width: 26px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--fp-gold));
+    }
+
+    .featured-products__title {
+      margin: 0;
+      font-size: clamp(1.5rem, 3.2vw, 2.25rem);
+      font-weight: 700;
+      line-height: 1.25;
+      letter-spacing: -.01em;
+      color: var(--fp-ink);
+    }
+    .featured-products__title::after {
+      content: "";
+      display: block;
+      width: 64px;
+      height: 3px;
+      margin-top: .7rem;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--fp-gold), var(--fp-gold-soft));
+    }
+
+    .featured-products__all {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .6rem 1.15rem;
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--fp-bronze-dark);
+      text-decoration: none;
+      background: #fff;
+      border: 1px solid var(--fp-line);
+      border-radius: 999px;
+      white-space: nowrap;
+      transition: background .25s ease, color .25s ease, border-color .25s ease,
+                  transform .25s ease, box-shadow .25s ease;
+    }
+    .featured-products__all:hover {
+      background: var(--fp-bronze);
+      border-color: var(--fp-bronze);
+      color: #fff;
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px -14px rgba(122, 88, 45, .9);
+    }
+    .featured-products__all svg {
+      width: 16px;
+      height: 16px;
+      transition: transform .25s ease;
+    }
+    .featured-products__all:hover svg { transform: translateX(-3px); }
+
+    /* ---------- Grid ---------- */
+    .featured-products__grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr)); /* mobile: 2 cols */
+      gap: clamp(.75rem, 2vw, 1.5rem);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    @media (min-width: 768px) {
+      .featured-products__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1024px) {
+      .featured-products__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } /* desktop: 4 cols */
+    }
+
+    /* ---------- Card ---------- */
+    .fp-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border: 1px solid var(--fp-line);
+      border-radius: var(--fp-radius);
+      overflow: hidden;
+      transition: transform .35s cubic-bezier(.2, .7, .3, 1),
+                  box-shadow .35s ease,
+                  border-color .35s ease;
+    }
+    .fp-card:hover,
+    .fp-card:focus-within {
+      transform: translateY(-6px);
+      border-color: var(--fp-gold-soft);
+      box-shadow:
+        0 22px 45px -26px rgba(122, 88, 45, .55),
+        0 0 0 1px rgba(200, 161, 101, .18);
+    }
+
+    /* ---------- Media ---------- */
+    .fp-card__media {
+      position: relative;
+      display: block;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      background: linear-gradient(160deg, var(--fp-beige), #fff);
+    }
+    .fp-card__img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .6s cubic-bezier(.2, .7, .3, 1);
+    }
+    .fp-card:hover .fp-card__img { transform: scale(1.07); }
+
+    /* ---------- Badge ---------- */
+    .fp-card__badge {
+      position: absolute;
+      inset-block-start: .75rem;
+      inset-inline-start: .75rem;
+      z-index: 2;
+      padding: .3rem .7rem;
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .02em;
+      color: #fff;
+      background: linear-gradient(135deg, var(--fp-bronze), var(--fp-gold));
+      border-radius: 999px;
+      box-shadow: 0 6px 16px -8px rgba(122, 88, 45, .85);
+    }
+
+    /* ---------- Add-to-cart icon button ---------- */
+    .fp-card__actions {
+      position: absolute;
+      inset-block-start: .75rem;
+      inset-inline-end: .75rem;
+      z-index: 3;
+      opacity: 0;
+      transform: translateY(-8px) scale(.92);
+      transition: opacity .3s ease, transform .3s cubic-bezier(.2, .7, .3, 1);
+    }
+    .fp-card:hover .fp-card__actions,
+    .fp-card:focus-within .fp-card__actions {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    /* Always visible on touch devices (no hover) */
+    @media (hover: none) {
+      .fp-card__actions { opacity: 1; transform: none; }
+    }
+
+    .fp-cart {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      padding: 0;
+      color: var(--fp-bronze-dark);
+      background: rgba(255, 255, 255, .94);
+      border: 1px solid var(--fp-line);
+      border-radius: 50%;
+      cursor: pointer;
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 10px 22px -14px rgba(90, 66, 38, .9);
+      transition: background .25s ease, color .25s ease, border-color .25s ease,
+                  transform .25s ease;
+    }
+    .fp-cart:hover,
+    .fp-cart:focus-visible {
+      color: #fff;
+      background: var(--fp-bronze);
+      border-color: var(--fp-bronze);
+      transform: scale(1.08);
+      outline: none;
+    }
+    .fp-cart svg {
+      width: 18px;
+      height: 18px;
+      pointer-events: none;
+    }
+
+    /* ---------- Body ---------- */
+    .fp-card__body {
+      display: flex;
+      flex-direction: column;
+      gap: .3rem;
+      flex: 1;
+      padding: .9rem 1rem 1.15rem;
+      text-align: start;
+    }
+
+    .fp-card__cat {
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      color: var(--fp-bronze);
+    }
+
+    .fp-card__name {
+      margin: 0;
+      font-size: .95rem;
+      font-weight: 600;
+      line-height: 1.55;
+      color: var(--fp-ink);
+    }
+    .fp-card__name a {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      color: inherit;
+      text-decoration: none;
+      transition: color .2s ease;
+    }
+    .fp-card__name a:hover { color: var(--fp-bronze); }
+
+    .fp-card__price {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: .5rem;
+      margin-top: auto;
+      padding-top: .5rem;
+    }
+    .fp-price--now {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--fp-bronze-dark);
+    }
+    .fp-price--was {
+      font-size: .8rem;
+      color: var(--fp-muted);
+      text-decoration: line-through;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .featured-products * { transition-duration: .01ms !important; }
+      .fp-card:hover { transform: none; }
+    }
+  </style>
+
+  <div class="featured-products__inner">
+
+    {# ------------------------------ Header ------------------------------ #}
+    <header class="featured-products__head">
+      <div>
+        <span class="featured-products__eyebrow">{{ section_eyebrow }}</span>
+        <h2 class="featured-products__title" id="fp-heading">{{ section_title }}</h2>
+      </div>
+
+      {% if all_url %}
+        <a class="featured-products__all" href="{{ all_url }}">
+          <span>{{ all_label }}</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M19 12H5"/>
+            <path d="m12 19-7-7 7-7"/>
+          </svg>
+        </a>
+      {% endif %}
+    </header>
+
+    {# --------------------------- Products grid -------------------------- #}
+    <ul class="featured-products__grid">
+
+      {% if has_products %}
+        {# ======================= DYNAMIC MODE ======================= #}
+        {% for product in products %}
+          {% set current_price = product.sale_price is defined and product.sale_price
+                                 ? product.sale_price
+                                 : product.price %}
+          {% set on_sale = product.sale_price is defined and product.sale_price
+                           and product.price is defined and product.price %}
+
+          <li class="fp-card">
+            <a class="fp-card__media" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
+              {% if product.promotion_title %}
+                <span class="fp-card__badge">{{ product.promotion_title }}</span>
+              {% endif %}
+
+              {# ---------- Safe image rendering ---------- #}
+              {% if product.image.url is defined and product.image.url %}
+                <img class="fp-card__img"
+                     src="{{ product.image.url }}"
+                     alt="{{ product.image.alt | default(product.name) }}"
+                     width="400"
+                     height="400"
+                     loading="lazy"
+                     decoding="async">
+              {% elseif product.image is defined and product.image is not empty %}
+                <img class="fp-card__img"
+                     src="{{ product.image }}"
+                     alt="{{ product.name }}"
+                     width="400"
+                     height="400"
+                     loading="lazy"
+                     decoding="async">
+              {% else %}
+                {# Placeholder when no image is available #}
+                <svg class="fp-card__img" viewBox="0 0 400 400" role="img"
+                     aria-label="{{ product.name }}" preserveAspectRatio="xMidYMid slice">
+                  <defs>
+                    <linearGradient id="fpPh{{ product.id }}" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stop-color="#fbf5ea"/>
+                      <stop offset="100%" stop-color="#e9d6ba"/>
+                    </linearGradient>
+                  </defs>
+                  <rect width="400" height="400" fill="url(#fpPh{{ product.id }})"/>
+                  <circle cx="200" cy="215" r="126" fill="#ffffff" opacity=".38"/>
+                  <rect x="176" y="84" width="48" height="36" rx="7" fill="#a97c50" opacity=".75"/>
+                  <rect x="188" y="118" width="24" height="16" rx="3" fill="#a97c50" opacity=".6"/>
+                  <path d="M152 132h96a22 22 0 0 1 22 22v122a30 30 0 0 1-30 30H160a30 30 0 0 1-30-30V154a22 22 0 0 1 22-22z"
+                        fill="#ffffff" fill-opacity=".85" stroke="#c8a165" stroke-width="2.5" stroke-opacity=".5"/>
+                  <rect x="168" y="228" width="64" height="40" rx="7"
+                        fill="#fffdf8" stroke="#dcc5a2" opacity=".92"/>
+                </svg>
+              {% endif %}
+            </a>
+
+            <div class="fp-card__body">
+              {% if product.category.name is defined and product.category.name %}
+                <span class="fp-card__cat">{{ product.category.name }}</span>
+              {% endif %}
+
+              <h3 class="fp-card__name">
+                <a href="{{ product.url }}">{{ product.name }}</a>
+              </h3>
+
+              <div class="fp-card__price">
+                <span class="fp-price fp-price--now">{{ current_price | money }}</span>
+                {% if on_sale %}
+                  <span class="fp-price fp-price--was">{{ product.price | money }}</span>
+                {% endif %}
+              </div>
+            </div>
+
+            {# ---------- Add to cart (Salla web component) ---------- #}
+            <div class="fp-card__actions">
+              <salla-add-product-button
+                product-id="{{ product.id }}"
+                product-status="{{ product.status }}"
+                product-type="{{ product.type }}"
+                class="fp-cart"
+                aria-label="{{ add_label }}">
+              </salla-add-product-button>
+            </div>
+          </li>
+        {% endfor %}
+
+      {% else %}
+        {# ======================= FALLBACK MODE ======================= #}
+        {% set fallback_items = [
+          { name: 'عطر عود رويال الفاخر',  category: 'عطور شرقية',  price: '1,250.00 ر.س', old_price: '1,500.00 ر.س', badge: 'الأكثر مبيعاً' },
+          { name: 'مسك أبيض نقي',          category: 'عطور مسكية',  price: '890.00 ر.س',   old_price: null,            badge: null },
+          { name: 'زهرة الياسمين الدمشقي', category: 'عطور زهرية',  price: '995.00 ر.س',   old_price: '1,150.00 ر.س', badge: 'خصم 15%' },
+          { name: 'عنبر الصحراء الذهبي',   category: 'عطور عنبرية', price: '1,420.00 ر.س', old_price: null,            badge: 'جديد' }
+        ] %}
+
+        {% for item in fallback_items %}
+          {% set i = loop.index %}
+
+          <li class="fp-card">
+            <div class="fp-card__media">
+              {% if item.badge %}
+                <span class="fp-card__badge">{{ item.badge }}</span>
+              {% endif %}
+
+              <svg class="fp-card__img" viewBox="0 0 400 400" role="img"
+                   aria-label="{{ item.name }}" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                  <linearGradient id="fpBg{{ i }}" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#fbf5ea"/>
+                    <stop offset="100%" stop-color="#e9d6ba"/>
+                  </linearGradient>
+                  <linearGradient id="fpGlass{{ i }}" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity=".95"/>
+                    <stop offset="100%" stop-color="#d9bf96" stop-opacity=".75"/>
+                  </linearGradient>
+                  <linearGradient id="fpCap{{ i }}" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#d9b578"/>
+                    <stop offset="100%" stop-color="#8a6238"/>
+                  </linearGradient>
+                </defs>
+
+                <rect width="400" height="400" fill="url(#fpBg{{ i }})"/>
+                <circle cx="200" cy="215" r="126" fill="#ffffff" opacity=".38"/>
+
+                <!-- cap -->
+                <rect x="176" y="84" width="48" height="36" rx="7" fill="url(#fpCap{{ i }})"/>
+                <rect x="188" y="118" width="24" height="16" rx="3" fill="#a97c50" opacity=".75"/>
+
+                <!-- bottle -->
+                <path d="M152 132h96a22 22 0 0 1 22 22v122a30 30 0 0 1-30 30H160a30 30 0 0 1-30-30V154a22 22 0 0 1 22-22z"
+                      fill="url(#fpGlass{{ i }})" stroke="#c8a165" stroke-width="2.5" stroke-opacity=".5"/>
+
+                <!-- liquid -->
+                <path d="M132 216h136v60a30 30 0 0 1-30 30H162a30 30 0 0 1-30-30z"
+                      fill="#c8a165" opacity=".32"/>
+
+                <!-- highlight -->
+                <rect x="150" y="158" width="12" height="96" rx="6" fill="#ffffff" opacity=".6"/>
+
+                <!-- label -->
+                <rect x="168" y="228" width="64" height="40" rx="7"
+                      fill="#fffdf8" stroke="#dcc5a2" opacity=".92"/>
+              </svg>
+            </div>
+
+            <div class="fp-card__body">
+              <span class="fp-card__cat">{{ item.category }}</span>
+              <h3 class="fp-card__name"><a href="#">{{ item.name }}</a></h3>
+              <div class="fp-card__price">
+                <span class="fp-price fp-price--now">{{ item.price }}</span>
+                {% if item.old_price %}
+                  <span class="fp-price fp-price--was">{{ item.old_price }}</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="fp-card__actions">
+              <button type="button" class="fp-cart" aria-label="{{ add_label }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                  <path d="M3 6h18"/>
+                  <path d="M16 10a4 4 0 0 1-8 0"/>
+                </svg>
+              </button>
+            </div>
+          </li>
+        {% endfor %}
+      {% endif %}
+
+    </ul>
+  </div>
+</section>

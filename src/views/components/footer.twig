@@ -1,0 +1,531 @@
+{# ============================================================
+   footer.twig — Salla Twilight
+   Dark Luxury Bronze/Gold Footer
+   ------------------------------------------------------------
+   Loops through store.contacts and store.social dynamically,
+   handles SVG + image logo formats, and renders the footer
+   navigation menu via the <salla-menu> web component.
+   ============================================================ #}
+
+<footer class="footer" role="contentinfo">
+
+    {# ---------- 1) TOP: Logo + Tagline ---------- #}
+    <div class="footer__top">
+        <div class="footer__brand">
+            <a href="{{ store.url }}" class="footer__logo-link" aria-label="{{ store.name }}">
+
+                {# --- Logo: SVG or Image URL --- #}
+                {% if store.logo is not empty %}
+                    {% set logo_str = store.logo|trim %}
+
+                    {% if '<svg' in logo_str %}
+                        {# Inline SVG logo #}
+                        <div class="footer__logo footer__logo--svg">
+                            {{ logo_str|raw }}
+                        </div>
+                    {% else %}
+                        {# Image URL logo #}
+                        <img
+                            src="{{ logo_str }}"
+                            alt="{{ store.name }}"
+                            class="footer__logo footer__logo--img"
+                            width="140"
+                            height="48"
+                            loading="lazy"
+                        >
+                    {% endif %}
+                {% else %}
+                    {# Fallback: store name as text #}
+                    <span class="footer__logo footer__logo--text">{{ store.name }}</span>
+                {% endif %}
+
+            </a>
+
+            {% if store.description is not empty %}
+                <p class="footer__tagline">{{ store.description|striptags|slice(0, 120) }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {# ---------- 2) MIDDLE: Navigation + Contact + Social ---------- #}
+    <div class="footer__middle">
+
+        {# --- 2a) Footer Navigation Menu (Salla web component) --- #}
+        <div class="footer__column footer__column--menu">
+            <h3 class="footer__heading">
+                <span class="footer__heading-accent"></span>
+                {{ trans('common.titles.quick_links') }}
+            </h3>
+            {# <salla-menu> renders the store’s footer menu dynamically #}
+            <salla-menu source="footer"></salla-menu>
+        </div>
+
+        {# --- 2b) Contact Information (store.contacts) --- #}
+        <div class="footer__column footer__column--contacts">
+            <h3 class="footer__heading">
+                <span class="footer__heading-accent"></span>
+                {{ trans('common.titles.contact_us') }}
+            </h3>
+
+            <ul class="footer__contact-list">
+                {% if store.contacts is defined and store.contacts is not empty %}
+                    {% for key, value in store.contacts %}
+                        {% if value is not empty %}
+                            <li class="footer__contact-item">
+                                {# Icon mapping per contact type #}
+                                <span class="footer__contact-icon" aria-hidden="true">
+                                    {% if key == 'phone' or key == 'telephone' %}
+                                        <svg viewBox="0 0 24 24" width="16" height="16"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.24 11.4 11.4 0 003.6.58 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.4 11.4 0 00.58 3.6 1 1 0 01-.25 1z"/></svg>
+                                    {% elseif key == 'whatsapp' %}
+                                        <svg viewBox="0 0 24 24" width="16" height="16"><path d="M17.6 6.4A7.9 7.9 0 0012 4a8 8 0 00-6.9 12l-1 3.7 3.8-1a8 8 0 0012.7-6.3 7.9 7.9 0 00-2-5zM12 18.5a6.5 6.5 0 01-3.3-.9l-.24-.14-2.3.6.6-2.2-.15-.25A6.5 6.5 0 1112 18.5zm3.6-4.9c-.2-.1-1.2-.6-1.4-.7s-.34-.1-.48.1-.56.7-.68.84-.25.16-.46.06a5.3 5.3 0 01-1.6-1 6 6 0 01-1.1-1.4c-.12-.2 0-.32.08-.42s.2-.24.3-.36a1.4 1.4 0 00.2-.34.38.38 0 000-.36c0-.1-.48-1.16-.66-1.58s-.34-.36-.48-.36h-.4a.78.78 0 00-.56.26 2.36 2.36 0 00-.74 1.76 4.1 4.1 0 00.86 2.18 9.4 9.4 0 003.6 3.18 12.3 12.3 0 001.2.44 2.9 2.9 0 001.34.08 2.2 2.2 0 001.44-1 1.78 1.78 0 00.12-1c-.06-.1-.22-.16-.42-.26z"/></svg>
+                                    {% elseif key == 'email' %}
+                                        <svg viewBox="0 0 24 24" width="16" height="16"><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5z"/></svg>
+                                    {% elseif key == 'telegram' %}
+                                        <svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm4.6 6.7l-1.6 7.6c-.12.54-.44.67-.9.42l-2.5-1.84-1.2 1.16a.63.63 0 01-.5.24l.18-2.54 4.62-4.17c.2-.18-.04-.28-.3-.1L8.6 13.2l-2.46-.77c-.53-.17-.54-.53.11-.79l9.6-3.7c.44-.16.83.1.75.76z"/></svg>
+                                    {% else %}
+                                        <svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 15h-2v-6h2zm0-8h-2V7h2z"/></svg>
+                                    {% endif %}
+                                </span>
+
+                                <a href="
+                                    {%- if key == 'email' -%}
+                                        mailto:{{ value }}
+                                    {%- elseif key == 'phone' or key == 'telephone' -%}
+                                        tel:{{ value }}
+                                    {%- elseif key == 'whatsapp' -%}
+                                        https://wa.me/{{ value }}
+                                    {%- else -%}
+                                        {{ value }}
+                                    {%- endif -%}
+                                " class="footer__contact-link">
+                                    {% if key == 'whatsapp' %}
+                                        {{ trans('common.titles.whatsapp') }}: {{ value }}
+                                    {% elseif key == 'email' %}
+                                        {{ value }}
+                                    {% else %}
+                                        {{ value }}
+                                    {% endif %}
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <li class="footer__contact-item footer__contact-item--empty">
+                        {{ trans('common.titles.no_contact_info') }}
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+
+        {# --- 2c) Social Links (store.social) --- #}
+        <div class="footer__column footer__column--social">
+            <h3 class="footer__heading">
+                <span class="footer__heading-accent"></span>
+                {{ trans('common.titles.follow_us') }}
+            </h3>
+
+            <div class="footer__social-list">
+                {% if store.social is defined and store.social is not empty %}
+                    {% for platform, url in store.social %}
+                        {% if url is not empty %}
+                            <a
+                                href="{{ url }}"
+                                class="footer__social-link"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="{{ platform }}"
+                            >
+                                {# --- Icon set for each platform --- #}
+                                {% if platform == 'twitter' or platform == 'x' %}
+                                    <svg viewBox="0 0 24 24" width="20" height="20"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L1.1 2h6.4l4.4 5.9zM17.8 20.1h1.7L7.4 3.8H5.6z"/></svg>
+                                {% elseif platform == 'instagram' %}
+                                    <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.3 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .3-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.3-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.3 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.7.1-1.1.1-1.7.2-2.1.4-.5.2-.9.4-1.2.8-.4.4-.6.7-.8 1.2-.2.4-.3 1-.4 2.1C2.7 8.5 2.7 8.9 2.7 12s0 3.5.1 4.7c.1 1.1.2 1.7.4 2.1.2.5.4.9.8 1.2.4.4.7.6 1.2.8.4.2 1 .3 2.1.4 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1.1-.1 1.7-.2 2.1-.4.5-.2.9-.4 1.2-.8.4-.4.6-.7.8-1.2.2-.4.3-1 .4-2.1.1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c-.1-1.1-.2-1.7-.4-2.1-.2-.5-.4-.9-.8-1.2-.4-.4-.7-.6-1.2-.8-.4-.2-1-.3-2.1-.4-1.2-.1-1.6-.1-4.7-.1zm0 3.1a4.9 4.9 0 110 9.8 4.9 4.9 0 010-9.8zm0 8.1a3.2 3.2 0 100-6.4 3.2 3.2 0 000 6.4zm6.2-8.3a1.1 1.1 0 11-2.2 0 1.1 1.1 0 012.2 0z"/></svg>
+                                {% elseif platform == 'facebook' %}
+                                    <svg viewBox="0 0 24 24" width="20" height="20"><path d="M22 12a10 10 0 10-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0022 12z"/></svg>
+                                {% elseif platform == 'snapchat' %}
+                                    <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12.2 2h-.4C9.6 2.1 8 3.5 7.9 5.8v.3c0 .5-.1 2.2-.6 2.7-.3.3-1.1.7-1.6.9-.4.2-.7.5-.7.9 0 .3.2.6.6.8.5.3 1.3.5 1.7 1 .3.4 0 1.1-.3 1.8-.6 1.1-1.6 2.5-3.2 3-.3.1-.5.3-.5.5 0 .4.6.7 1.2.9.5.2 1.2.4 1.4.8.2.3.1.8.2 1.2.1.5.3.7.7.7.5 0 1.1-.4 2-.4.7 0 1.4.2 2 .6.7.4 1.5.6 2.3.6s1.6-.2 2.3-.6c.6-.4 1.3-.6 2-.6.9 0 1.5.4 2 .4.4 0 .6-.2.7-.7.1-.4 0-.9.2-1.2.2-.4.9-.6 1.4-.8.6-.2 1.2-.5 1.2-.9 0-.2-.2-.4-.5-.5-1.6-.5-2.6-1.9-3.2-3-.3-.7-.6-1.4-.3-1.8.4-.5 1.2-.7 1.7-1 .4-.2.6-.5.6-.8 0-.4-.3-.7-.7-.9-.5-.2-1.3-.6-1.6-.9-.5-.5-.6-2.2-.6-2.7v-.3C16 3.5 14.4 2.1 12.2 2z"/></svg>
+                                {% elseif platform == 'tiktok' %}
+                                    <svg viewBox="0 0 24 24" width="20" height="20"><path d="M19.6 6.8a5.8 5.8 0 01-3.4-1.1v7.7a6 6 0 11-6-6 6 6 0 011.1.1v3.2a2.8 2.8 0 101.9 2.7V2h3.1a5.8 5.8 0 003.3 4.8z"/></svg>
+                                {% elseif platform == 'youtube' %}
+                                    <svg viewBox="0 0 24 24" width="20" height="20"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 00.5 6.2 31.3 31.3 0 000 12a31.3 31.3 0 00.5 5.8 3 3 0 002.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 002.1-2.1A31.3 31.3 0 0024 12a31.3 31.3 0 00-.5-5.8zM9.5 15.5v-7l6.3 3.5z"/></svg>
+                                {% elseif platform == 'pinterest' %}
+                                    <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 2a10 10 0 00-3.6 19.3c-.1-.8-.2-2 0-2.9l1.2-5s-.3-.6-.3-1.5c0-1.4.8-2.4 1.8-2.4.9 0 1.3.7 1.3 1.5 0 .9-.6 2.2-.9 3.5-.3 1.1.5 2 1.6 2 2 0 3.5-2.1 3.5-5.1 0-2.7-1.9-4.6-4.7-4.6-3.2 0-5 2.4-5 4.9 0 1 .4 2 .9 2.6.1.1.1.2.1.3l-.3 1.2c0 .2-.2.3-.3.2-1.2-.6-1.9-2.4-1.9-3.8 0-3.1 2.3-6 6.5-6 3.4 0 6.1 2.4 6.1 5.7 0 3.4-2.1 6.1-5.1 6.1-1 0-1.9-.5-2.2-1.1l-.6 2.3c-.2.8-.8 1.9-1.2 2.5A10 10 0 1012 2z"/></svg>
+                                {% elseif platform == 'telegram' %}
+                                    <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm4.6 6.7l-1.6 7.6c-.12.54-.44.67-.9.42l-2.5-1.84-1.2 1.16a.63.63 0 01-.5.24l.18-2.54 4.62-4.17c.2-.18-.04-.28-.3-.1L8.6 13.2l-2.46-.77c-.53-.17-.54-.53.11-.79l9.6-3.7c.44-.16.83.1.75.76z"/></svg>
+                                {% elseif platform == 'whatsapp' %}
+                                    <svg viewBox="0 0 24 24" width="20" height="20"><path d="M17.6 6.4A7.9 7.9 0 0012 4a8 8 0 00-6.9 12l-1 3.7 3.8-1a8 8 0 0012.7-6.3 7.9 7.9 0 00-2-5zM12 18.5a6.5 6.5 0 01-3.3-.9l-.24-.14-2.3.6.6-2.2-.15-.25A6.5 6.5 0 1112 18.5zm3.6-4.9c-.2-.1-1.2-.6-1.4-.7s-.34-.1-.48.1-.56.7-.68.84-.25.16-.46.06a5.3 5.3 0 01-1.6-1 6 6 0 01-1.1-1.4c-.12-.2 0-.32.08-.42s.2-.24.3-.36a1.4 1.4 0 00.2-.34.38.38 0 000-.36c0-.1-.48-1.16-.66-1.58s-.34-.36-.48-.36h-.4a.78.78 0 00-.56.26 2.36 2.36 0 00-.74 1.76 4.1 4.1 0 00.86 2.18 9.4 9.4 0 003.6 3.18 12.3 12.3 0 001.2.44 2.9 2.9 0 001.34.08 2.2 2.2 0 001.44-1 1.78 1.78 0 00.12-1c-.06-.1-.22-.16-.42-.26z"/></svg>
+                                {% else %}
+                                    <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 15h-2v-6h2zm0-8h-2V7h2z"/></svg>
+                                {% endif %}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p class="footer__social-empty">{{ trans('common.titles.no_social_links') }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+    {# ---------- 3) BOTTOM: Copyright + Payment Methods ---------- #}
+    <div class="footer__bottom">
+        <div class="footer__bottom-inner">
+
+            <p class="footer__copyright">
+                {% if store.copyright is defined and store.copyright is not empty %}
+                    {{ store.copyright }}
+                {% else %}
+                    &copy; {{ "now"|date("Y") }} {{ store.name }}. {{ trans('common.titles.all_rights_reserved') }}
+                {% endif %}
+            </p>
+
+            {# Payment methods (Salla web component) #}
+            <div class="footer__payments">
+                <salla-payments></salla-payments>
+            </div>
+
+        </div>
+    </div>
+
+</footer>
+
+{# ============================================================
+   SCOPED STYLES — Dark Luxury Bronze/Gold
+   ============================================================ #}
+<style>
+    .footer {
+        /* ---- Theme Variables (overridable by merchant) ---- */
+        --ft-bg:            #1A1614;
+        --ft-bg-2:          #201B18;
+        --ft-surface:       #26201C;
+        --ft-border:        rgba(198, 161, 91, .18);
+        --ft-gold:          #C6A15B;
+        --ft-gold-light:    #E0C48A;
+        --ft-gold-deep:     #A17E3C;
+        --ft-text:          #E8E0D5;
+        --ft-text-muted:    #A89B8C;
+        --ft-heading:       #F5EDE0;
+        --ft-radius:        14px;
+        --ft-transition:    .3s cubic-bezier(.22,.61,.36,1);
+
+        position: relative;
+        background: linear-gradient(180deg, var(--ft-bg) 0%, var(--ft-bg-2) 100%);
+        color: var(--ft-text);
+        font-size: .92rem;
+        line-height: 1.7;
+        overflow: hidden;
+        isolation: isolate;
+    }
+
+    /* Subtle gold ambient glow */
+    .footer::before {
+        content: "";
+        position: absolute;
+        inset-inline-start: 50%;
+        top: -180px;
+        transform: translateX(-50%);
+        width: 700px;
+        height: 360px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(198, 161, 91, .08), transparent 70%);
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    /* Thin gold top border */
+    .footer::after {
+        content: "";
+        position: absolute;
+        inset-inline: 0;
+        top: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--ft-gold), var(--ft-gold-light), var(--ft-gold), transparent);
+        opacity: .7;
+    }
+
+    /* ============================================================
+       TOP — Brand
+       ============================================================ */
+    .footer__top {
+        padding: 2.5rem 0 2rem;
+        border-bottom: 1px solid var(--ft-border);
+    }
+
+    .footer__brand {
+        max-width: 1200px;
+        margin-inline: auto;
+        padding-inline: clamp(1rem, 4vw, 2rem);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: .85rem;
+    }
+
+    .footer__logo-link {
+        display: inline-block;
+        text-decoration: none;
+    }
+
+    .footer__logo--img {
+        max-height: 48px;
+        width: auto;
+        display: block;
+        filter: brightness(1.05);
+        transition: opacity var(--ft-transition);
+    }
+
+    .footer__logo-link:hover .footer__logo--img {
+        opacity: .85;
+    }
+
+    .footer__logo--svg {
+        display: inline-block;
+        line-height: 0;
+    }
+
+    .footer__logo--svg svg {
+        max-height: 48px;
+        width: auto;
+        fill: var(--ft-gold-light);
+    }
+
+    .footer__logo--text {
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: .04em;
+        color: var(--ft-gold-light);
+        text-decoration: none;
+    }
+
+    .footer__tagline {
+        margin: 0;
+        max-width: 520px;
+        font-size: .86rem;
+        line-height: 1.85;
+        color: var(--ft-text-muted);
+    }
+
+    /* ============================================================
+       MIDDLE — Columns
+       ============================================================ */
+    .footer__middle {
+        max-width: 1200px;
+        margin-inline: auto;
+        padding: 2.5rem clamp(1rem, 4vw, 2rem) 2rem;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .footer__column {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .footer__heading {
+        position: relative;
+        margin: 0;
+        padding-inline-start: .85rem;
+        font-size: .82rem;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: var(--ft-gold-light);
+    }
+
+    .footer__heading-accent {
+        position: absolute;
+        inset-inline-start: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 1.1em;
+        border-radius: 2px;
+        background: linear-gradient(180deg, var(--ft-gold-light), var(--ft-gold-deep));
+    }
+
+    /* -------- Contact List -------- */
+    .footer__contact-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: .7rem;
+    }
+
+    .footer__contact-item {
+        display: flex;
+        align-items: flex-start;
+        gap: .6rem;
+        font-size: .88rem;
+    }
+
+    .footer__contact-icon {
+        flex: 0 0 auto;
+        display: grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: rgba(198, 161, 91, .1);
+        border: 1px solid rgba(198, 161, 91, .2);
+        margin-top: .1rem;
+    }
+
+    .footer__contact-icon svg {
+        fill: var(--ft-gold);
+        display: block;
+    }
+
+    .footer__contact-link {
+        color: var(--ft-text);
+        text-decoration: none;
+        line-height: 1.6;
+        transition: color var(--ft-transition);
+        word-break: break-word;
+    }
+
+    .footer__contact-link:hover {
+        color: var(--ft-gold-light);
+    }
+
+    .footer__contact-item--empty {
+        color: var(--ft-text-muted);
+        font-style: italic;
+        font-size: .82rem;
+    }
+
+    /* -------- Social Links -------- */
+    .footer__social-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .6rem;
+    }
+
+    .footer__social-link {
+        display: grid;
+        place-items: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        color: var(--ft-gold);
+        background: rgba(198, 161, 91, .08);
+        border: 1px solid rgba(198, 161, 91, .22);
+        text-decoration: none;
+        transition: all var(--ft-transition);
+    }
+
+    .footer__social-link svg {
+        fill: currentColor;
+        display: block;
+        transition: transform var(--ft-transition);
+    }
+
+    .footer__social-link:hover {
+        background: linear-gradient(135deg, var(--ft-gold) 0%, var(--ft-gold-deep) 100%);
+        color: #1A1614;
+        border-color: transparent;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px -8px rgba(198, 161, 91, .5);
+    }
+
+    .footer__social-link:hover svg {
+        transform: scale(1.1);
+    }
+
+    .footer__social-empty {
+        margin: 0;
+        font-size: .82rem;
+        color: var(--ft-text-muted);
+        font-style: italic;
+    }
+
+    /* -------- Salla Menu styling (scoped via custom element) -------- */
+    .footer__column--menu salla-menu {
+        display: block;
+        --salla-menu-color: var(--ft-text);
+        --salla-menu-hover-color: var(--ft-gold-light);
+        --salla-menu-gap: .5rem;
+        --salla-menu-font-size: .88rem;
+    }
+
+    /* ============================================================
+       BOTTOM — Copyright + Payments
+       ============================================================ */
+    .footer__bottom {
+        border-top: 1px solid var(--ft-border);
+        background: rgba(0, 0, 0, .15);
+    }
+
+    .footer__bottom-inner {
+        max-width: 1200px;
+        margin-inline: auto;
+        padding: 1.25rem clamp(1rem, 4vw, 2rem);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .footer__copyright {
+        margin: 0;
+        font-size: .8rem;
+        color: var(--ft-text-muted);
+        line-height: 1.7;
+    }
+
+    .footer__payments salla-payments {
+        display: block;
+        opacity: .85;
+        transition: opacity var(--ft-transition);
+    }
+
+    .footer__payments salla-payments:hover {
+        opacity: 1;
+    }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (min-width: 640px) {
+        .footer__middle {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .footer__bottom-inner {
+            flex-direction: row;
+            justify-content: space-between;
+            text-align: start;
+        }
+    }
+
+    @media (min-width: 992px) {
+        .footer__middle {
+            grid-template-columns: 1.2fr 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .footer__top {
+            padding: 3.5rem 0 2.5rem;
+        }
+
+        .footer__brand {
+            align-items: flex-start;
+            text-align: start;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .footer__social-link,
+        .footer__contact-link,
+        .footer__logo--img,
+        .footer__payments salla-payments {
+            transition: none;
+        }
+    }
+</style>
