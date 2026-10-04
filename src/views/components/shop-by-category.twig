@@ -1,0 +1,131 @@
+{# ============================================================
+   components/shop-by-category.twig — Dokhoon Iris
+   Usage: {% include 'components.shop-by-category' %}
+   Dynamic mode: pass `categories` (Salla category objects).
+   Optional per category: `subtitle` (small maroon line under the name).
+   Classes map to dokhoon-iris.css sections 09, 10, 23.
+   ============================================================ #}
+{# trans() returns the raw key when missing, so |default never fires; guard explicitly #}
+{% set sc_title = trans('blocks.home.shop_by_category') %}
+{% if sc_title is empty or sc_title == 'blocks.home.shop_by_category' %}{% set sc_title = 'تسوق حسب الفئة' %}{% endif %}
+
+<section class="s-block s-block--categories" aria-labelledby="shopByCategoryTitle">
+    <div class="container">
+
+        <div class="s-block__title">
+            <h2 id="shopByCategoryTitle">{{ sc_title }}</h2>
+        </div>
+
+        <div class="s-block__content">
+
+        {% if categories is defined and categories is not empty %}
+            {# ---------- DYNAMIC MODE ---------- #}
+            {% for category in categories %}
+            <a href="{{ category.url | default('#') }}"
+               class="category-card"
+               aria-label="{{ category.name | default('فئة') }}"
+               title="{{ category.name | default('') }}">
+
+                {# category.image is an object in Twilight, not a string #}
+                {% if category.image is defined
+                      and category.image is not empty
+                      and category.image.url is defined
+                      and category.image.url is not empty %}
+                    <img src="{{ category.image.url }}"
+                         alt="{{ category.image.alt | default(category.name | default('صورة الفئة')) }}"
+                         loading="lazy"
+                         width="400"
+                         height="440"
+                         onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+                    <span class="di-placeholder" hidden>
+                        <svg class="di-placeholder__icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <rect x="15" y="15" width="70" height="70" rx="12" stroke="#B08D57" stroke-width="2" fill="#F9F6F0"/>
+                            <circle cx="38" cy="42" r="6" stroke="#B08D57" stroke-width="1.8" fill="none"/>
+                            <path d="M20 72 L40 52 L55 65 L70 50 L82 62" stroke="#B08D57" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                {% else %}
+                    <span class="di-placeholder">
+                        <svg class="di-placeholder__icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="{{ category.name | default('فئة') }}">
+                            <rect x="15" y="15" width="70" height="70" rx="12" stroke="#B08D57" stroke-width="2" fill="#F9F6F0"/>
+                            <circle cx="38" cy="42" r="6" stroke="#B08D57" stroke-width="1.8" fill="none"/>
+                            <path d="M20 72 L40 52 L55 65 L70 50 L82 62" stroke="#B08D57" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                {% endif %}
+
+                <h3 class="category-title">{{ category.name | default('فئة') }}</h3>
+                {% if category.subtitle is defined and category.subtitle is not empty %}
+                    <p class="category-subtitle">{{ category.subtitle }}</p>
+                {% endif %}
+            </a>
+            {% endfor %}
+
+        {% else %}
+            {# ---------- STATIC FALLBACK MODE ---------- #}
+
+            <a href="#" class="category-card" aria-label="تسوق العطور">
+                <div class="di-placeholder">
+                    <svg class="di-placeholder__icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="زجاجة عطر">
+                        <rect x="30" y="35" width="40" height="50" rx="8" stroke="#B08D57" stroke-width="2.2" fill="#F9F6F0"/>
+                        <rect x="40" y="18" width="20" height="12" rx="3" stroke="#B08D57" stroke-width="2.2" fill="#F1EBDF"/>
+                        <line x1="50" y1="30" x2="50" y2="35" stroke="#B08D57" stroke-width="2.2"/>
+                        <circle cx="50" cy="15" r="3" fill="#B08D57" opacity="0.7"/>
+                        <line x1="38" y1="55" x2="62" y2="55" stroke="#B08D57" stroke-width="1.5" opacity="0.5"/>
+                        <line x1="38" y1="65" x2="58" y2="65" stroke="#B08D57" stroke-width="1.5" opacity="0.4"/>
+                        </svg>
+                </div>
+                <h3 class="category-title">عطور</h3>
+                <p class="category-subtitle">Perfumes</p>
+            </a>
+
+            <a href="#" class="category-card" aria-label="تسوق البخور">
+                <div class="di-placeholder">
+                    <svg class="di-placeholder__icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="بخور">
+                        <path d="M25 70 L75 70 L68 85 L32 85 Z" stroke="#B08D57" stroke-width="2.2" fill="#F1EBDF"/>
+                        <path d="M35 45 L65 45 L65 70 L35 70 Z" stroke="#B08D57" stroke-width="2.2" fill="#F9F6F0"/>
+                        <path d="M45 45 Q48 35 45 25 Q42 15 45 5" stroke="#B08D57" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+                        <path d="M55 45 Q58 35 55 25 Q52 15 55 5" stroke="#B08D57" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+                        <rect x="42" y="38" width="16" height="5" rx="2" fill="#B08D57" opacity="0.7"/>
+                        </svg>
+                </div>
+                <h3 class="category-title">بخور</h3>
+                <p class="category-subtitle">Incense</p>
+            </a>
+
+            <a href="#" class="category-card" aria-label="تسوق العود">
+                <div class="di-placeholder">
+                    <svg class="di-placeholder__icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="عود">
+                        <path d="M30 40 L70 35 L78 55 L65 75 L35 78 L22 58 Z" stroke="#B08D57" stroke-width="2.2" fill="#F1EBDF"/>
+                        <path d="M38 45 L62 42" stroke="#B08D57" stroke-width="1.5" opacity="0.5"/>
+                        <path d="M35 55 L65 52" stroke="#B08D57" stroke-width="1.5" opacity="0.4"/>
+                        <path d="M32 65 L60 62" stroke="#B08D57" stroke-width="1.5" opacity="0.3"/>
+                        <ellipse cx="48" cy="52" rx="5" ry="3" stroke="#B08D57" stroke-width="1.2" fill="none" opacity="0.7"/>
+                        </svg>
+                </div>
+                <h3 class="category-title">عود</h3>
+                <p class="category-subtitle">Oud</p>
+            </a>
+
+            <a href="#" class="category-card" aria-label="تسوق أطقم الهدايا">
+                <div class="di-placeholder">
+                    <svg class="di-placeholder__icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="حقيبة هدايا">
+                        <rect x="25" y="38" width="50" height="42" rx="6" stroke="#B08D57" stroke-width="2.2" fill="#F9F6F0"/>
+                        <path d="M40 38 L40 28 Q40 18 50 18 Q60 18 60 28 L60 38" stroke="#B08D57" stroke-width="2.2" fill="none"/>
+                        <rect x="45" y="38" width="10" height="42" fill="#B08D57" opacity="0.2"/>
+                        <circle cx="50" cy="48" r="5" fill="none" stroke="#B08D57" stroke-width="1.8"/>
+                        <path d="M45 45 L40 40" stroke="#B08D57" stroke-width="1.8"/>
+                        <path d="M55 45 L60 40" stroke="#B08D57" stroke-width="1.8"/>
+                        <path d="M45 51 L40 56" stroke="#B08D57" stroke-width="1.8"/>
+                        <path d="M55 51 L60 56" stroke="#B08D57" stroke-width="1.8"/>
+                        </svg>
+                </div>
+                <h3 class="category-title">أطقم هدايا</h3>
+                <p class="category-subtitle">Gift Sets</p>
+            </a>
+
+        {% endif %}
+
+        </div>
+    </div>
+</section>

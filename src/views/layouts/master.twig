@@ -1,0 +1,57 @@
+{# ============================================================
+   layouts/master.twig — Dokhoon Iris
+   Base layout for every page (pages extend it via
+   {% extends "layouts.master" %}).
+   Integration rules: see INTEGRATION.md
+   ============================================================ #}
+<!DOCTYPE html>
+<html lang="{{ user.language_code|default('ar') }}" dir="{{ user.language_dir|default('rtl') }}">
+<head>
+  {% hook 'head:start' %}
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{{ page.title|striptags }}</title>
+
+  {# Tajawal #}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  {# Dokhoon Iris stylesheet (public/dokhoon-iris.css) #}
+  <link rel="stylesheet" href="{{ 'dokhoon-iris.css' | asset }}">
+
+  {# Merchant-editable brand tokens from twilight.json settings #}
+  <style>
+    :root {
+      --di-cream: {{ theme.settings.get('di_cream', '#F9F6F0') }};
+      --di-gold:  {{ theme.settings.get('di_gold',  '#B08D57') }};
+      --di-black: {{ theme.settings.get('di_black', '#1A1A1A') }};
+      --color-primary: {{ theme.settings.get('di_maroon', '#8C2D19') }};
+    }
+  </style>
+
+  {% hook 'head' %}
+  {% hook 'head:end' %}
+</head>
+
+<body id="app" class="di-theme {% hook 'body:classes' %}">
+  {% hook 'body:start' %}
+
+  {% include 'components.header' %}
+
+  <main class="app-inner">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% include 'components.footer' %}
+
+  {# Salla global web components #}
+  <salla-offer-modal></salla-offer-modal>
+  <salla-login-modal></salla-login-modal>
+  <salla-add-product-toast></salla-add-product-toast>
+
+  {% block scripts %}{% endblock %}
+  {% hook 'body:end' %}
+</body>
+</html>

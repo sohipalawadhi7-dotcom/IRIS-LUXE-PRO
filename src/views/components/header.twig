@@ -1,0 +1,78 @@
+{# ============================================================
+   components/header.twig — Dokhoon Iris
+   Announcement bar + header (nav | centered logo | actions).
+   Classes map to dokhoon-iris.css sections 03, 04, 05, 20.
+   ============================================================ #}
+
+{% set announcement = theme.settings.get('di_announcement', 'شحن مجاني للطلبات فوق ٣٠٠ ر.س') %}
+
+{# ---------- Announcement bar ---------- #}
+{% if announcement is not empty %}
+  <div class="top-navbar">
+    <div class="container">
+      <span>{{ announcement }}</span>
+    </div>
+  </div>
+{% endif %}
+
+{# ---------- Header ---------- #}
+<header class="store-header">
+  <div class="main-nav-container">
+    <div class="container">
+
+      {# Start edge: burger (mobile) + main menu #}
+      <div class="header-start">
+        <button type="button" class="header-btn mburger" data-di-burger
+                aria-label="القائمة" aria-expanded="false" aria-controls="di-nav">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16"/>
+          </svg>
+        </button>
+
+        <nav class="main-nav mobile-menu" id="di-nav" aria-label="{{ store.name }}">
+          <salla-menu source="header"></salla-menu>
+        </nav>
+      </div>
+
+      {# Center: logo (SVG string or image URL) #}
+      <a class="navbar-brand" href="{{ store.url }}" aria-label="{{ store.name }}">
+        {% if store.logo is not empty %}
+          {% set logo_str = store.logo|trim %}
+          {% if '<svg' in logo_str %}
+            {{ logo_str|raw }}
+          {% else %}
+            <img src="{{ logo_str }}" alt="{{ store.name }}" width="160" height="56">
+          {% endif %}
+        {% else %}
+          <span class="navbar-brand__text">{{ store.name }}</span>
+        {% endif %}
+      </a>
+
+      {# End edge: search / account / cart #}
+      <div class="header-end">
+        <div class="header-btn header-search"><salla-search></salla-search></div>
+        <div class="header-btn"><salla-user-menu></salla-user-menu></div>
+        <div class="header-btn"><salla-cart-summary></salla-cart-summary></div>
+      </div>
+
+    </div>
+  </div>
+</header>
+
+<script>
+  (function () {
+    var btn = document.querySelector('[data-di-burger]');
+    var nav = document.getElementById('di-nav');
+    if (!btn || !nav) return;
+
+    function setOpen(open) {
+      nav.classList.toggle('is-open', open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    btn.addEventListener('click', function () { setOpen(!nav.classList.contains('is-open')); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && nav.classList.contains('is-open')) { setOpen(false); btn.focus(); }
+    });
+  })();
+</script>

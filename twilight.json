@@ -1,0 +1,40 @@
+{
+  "name": "twilight",
+  "label": "Twilight Theme",
+  "settings": [
+    {
+      "id": "di_cream",
+      "type": "color",
+      "label": "لون الخلفية الكريمي",
+      "format": "hex",
+      "value": "#F9F6F0"
+    },
+    {
+      "id": "di_gold",
+      "type": "color",
+      "label": "اللون الذهبي (الأيقونات)",
+      "format": "hex",
+      "value": "#B08D57"
+    },
+    {
+      "id": "di_black",
+      "type": "color",
+      "label": "لون النص",
+      "format": "hex",
+      "value": "#1A1A1A"
+    },
+    {
+      "id": "di_maroon",
+      "type": "color",
+      "label": "اللون الرئيسي (العنابي)",
+      "format": "hex",
+      "value": "#8C2D19"
+    },
+    {
+      "id": "di_announcement",
+      "type": "string",
+      "label": "نص شريط الإعلان",
+      "value": "شحن مجاني للطلبات فوق ٣٠٠ ر.س"
+    }
+  ]
+}

@@ -1,0 +1,1790 @@
+/* ==========================================================================
+   DOKHOON IRIS — Twilight theme stylesheet
+   Path:  public/dokhoon-iris.css
+   Load:  after the theme's own app.css (see INTEGRATION.md)
+
+   Principles
+   - No hard-coded brand colors in rules: everything reads --di-* tokens,
+     and --di-maroon follows Salla's --color-primary (set from twilight.json).
+   - RTL/LTR safe: logical properties (inline-start/end, padding-inline,
+     text-align:start). [dir] is used only where a physical flip is unavoidable.
+   - No !important. Specificity is kept low; load order does the work.
+   - Salla components render in the light DOM, so these selectors reach them.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   00. DESIGN TOKENS
+   :where() = zero specificity, so values injected from twilight.json /
+   master.twig (:root { --di-cream: ... }) always win, whatever the load order.
+   ========================================================================== */
+:where(:root) {
+  /* Brand — merchant-editable via twilight.json */
+  --di-cream:       #F9F6F0;
+  --di-cream-dark:  #F1EBDF;
+  --di-white:       #FFFFFF;
+  --di-black:       #1A1A1A;
+  --di-gold:        #B08D57;
+  --di-gold-soft:   #D9C7A3;
+  --di-line:        #E6DECE;
+  --di-muted:       #6B6B6B;
+
+  /* Follows the store's primary color (Salla core variable) */
+  --di-maroon:      var(--color-primary, #8C2D19);
+  --di-maroon-dark: var(--color-primary-dark, color-mix(in srgb, var(--di-maroon), #000 24%));
+  --di-on-maroon:   var(--color-primary-reverse, #FFFFFF);
+
+  /* Type */
+  --di-font: 'Tajawal', var(--font-main, 'Cairo'), 'Cairo', sans-serif;
+
+  /* Shape & rhythm */
+  --di-radius:      2px;
+  --di-section-gap: 64px;
+  --di-card-gap:    18px;
+  --di-shadow:      0 6px 24px rgba(26, 26, 26, .06);
+  --di-shadow-lg:   0 12px 30px rgba(26, 26, 26, .10);
+  --di-ease:        .25s ease;
+}
+
+@media (max-width: 767px) {
+  :where(:root) {
+    --di-section-gap: 40px;
+    --di-card-gap: 12px;
+  }
+}
+
+
+/* ==========================================================================
+   01. BASE & TYPOGRAPHY
+   Tajawal is loaded with a <link> in master.twig (not @import — faster,
+   and works in `salla theme preview`).
+   ========================================================================== */
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--di-font);
+}
+
+body {
+  background-color: var(--di-cream);
+  color: var(--di-black);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--di-black);
+  font-weight: 700;
+}
+
+a {
+  color: var(--di-black);
+  transition: color var(--di-ease);
+}
+a:hover {
+  color: var(--di-maroon);
+}
+
+::selection {
+  background: var(--di-gold-soft);
+  color: var(--di-black);
+}
+
+:focus-visible {
+  outline: 2px solid var(--di-gold);
+  outline-offset: 2px;
+}
+
+
+/* ==========================================================================
+   02. LAYOUT RHYTHM (breathing space between homepage blocks)
+   ========================================================================== */
+.store-wrapper,
+main.app-inner {
+  background-color: var(--di-cream);
+}
+
+.s-block {
+  margin-block: var(--di-section-gap);
+}
+.s-block:first-child {
+  margin-block-start: 0;
+}
+
+
+/* ==========================================================================
+   03. ANNOUNCEMENT BAR
+   ========================================================================== */
+.top-navbar,
+.announcement-bar {
+  background-color: var(--di-white);
+  color: var(--di-black);
+  border-block-end: 1px solid var(--di-line);
+  font-size: 13px;
+  font-weight: 500;
+  padding-block: 8px;
+  text-align: center;
+}
+
+.top-navbar .container,
+.announcement-bar .container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.top-navbar a,
+.top-navbar p,
+.top-navbar span {
+  color: var(--di-black);
+  text-align: center;
+}
+
+/* Delivery-truck icon — inline SVG mask, inherits gold, flips with direction */
+.top-navbar .container::after,
+.announcement-bar .container::after {
+  content: "";
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  background-color: var(--di-gold);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 6h13v10H1z'/%3E%3Cpath d='M14 9h4l4 4v3h-8z'/%3E%3Ccircle cx='6' cy='18' r='2'/%3E%3Ccircle cx='18' cy='18' r='2'/%3E%3C/svg%3E") center / contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 6h13v10H1z'/%3E%3Cpath d='M14 9h4l4 4v3h-8z'/%3E%3Ccircle cx='6' cy='18' r='2'/%3E%3Ccircle cx='18' cy='18' r='2'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+[dir="rtl"] .top-navbar .container::after,
+[dir="rtl"] .announcement-bar .container::after {
+  transform: scaleX(-1); /* truck faces the reading direction */
+}
+
+
+/* ==========================================================================
+   04. HEADER
+   Logo centered; menu on one side, action icons on the other.
+   Works in RTL and LTR: the flex row mirrors automatically.
+   ========================================================================== */
+.store-header {
+  background-color: transparent;
+  box-shadow: none;
+  border-block-end: 1px solid var(--di-line);
+}
+
+.store-header .main-nav-container,
+.store-header .inner {
+  background-color: var(--di-cream);
+}
+
+.store-header .container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 78px;
+}
+
+.navbar-brand {
+  margin: 0;
+}
+.navbar-brand img {
+  max-height: 56px;
+  width: auto;
+  object-fit: contain;
+}
+
+@media (min-width: 992px) {
+  /* Physical `left` + translate is direction-independent: true center in both */
+  .navbar-brand {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@media (max-width: 991px) {
+  .store-header .container { min-height: 64px; }
+  .navbar-brand img { max-height: 44px; }
+}
+
+/* Header action icons (search / account / cart) */
+.header-btn {
+  background: transparent;
+  border: 0;
+  color: var(--di-black);
+  transition: color var(--di-ease);
+}
+.header-btn:hover,
+.header-btn:hover i {
+  color: var(--di-gold);
+}
+
+.s-cart-summary-count,
+.header-btn .s-cart-summary-count {
+  background-color: var(--di-maroon);
+  color: var(--di-on-maroon);
+}
+
+
+/* ==========================================================================
+   05. MAIN NAVIGATION
+   ========================================================================== */
+.main-menu {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.main-menu > li > a,
+.main-menu .nav-link {
+  position: relative;
+  padding-block: 8px;
+  background: transparent;
+  color: var(--di-maroon);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.main-menu > li > a::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  height: 2px;
+  background: var(--di-maroon);
+  transform: scaleX(0);
+  transition: transform var(--di-ease);
+}
+.main-menu > li > a:hover::after,
+.main-menu > li.active > a::after,
+.main-menu > li > a.active::after {
+  transform: scaleX(1);
+}
+
+/* Dropdowns / mega menu */
+.main-menu .sub-menu,
+.main-menu .dropdown-menu,
+.main-menu .mega-menu {
+  background-color: var(--di-white);
+  border: 1px solid var(--di-line);
+  border-radius: var(--di-radius);
+  box-shadow: var(--di-shadow);
+  text-align: start;
+}
+
+/* Mobile drawer */
+.mobile-menu,
+.mburger,
+.main-menu--mobile {
+  background-color: var(--di-cream);
+}
+.mobile-menu a {
+  color: var(--di-black);
+}
+.mobile-menu a:hover {
+  color: var(--di-maroon);
+}
+
+@media (max-width: 991px) {
+  .main-menu { gap: 18px; }
+}
+
+
+/* ==========================================================================
+   06. HERO / MAIN SLIDER
+   ========================================================================== */
+.s-block--main-slider,
+.s-block--fixed-banner,
+.s-block--hero {
+  margin-block: 0 var(--di-section-gap);
+}
+
+.s-block--main-slider .swiper-slide,
+.s-block--main-slider img {
+  border-radius: 0;
+}
+
+.s-block--main-slider h2,
+.s-block--main-slider .slide-title {
+  color: var(--di-gold);
+  font-weight: 800;
+}
+.s-block--main-slider p {
+  color: var(--di-black);
+  font-weight: 500;
+}
+
+.swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  background: var(--di-gold-soft);
+  opacity: 1;
+  transition: width var(--di-ease), background-color var(--di-ease);
+}
+.swiper-pagination-bullet-active {
+  width: 22px;
+  border-radius: 8px;
+  background: var(--di-gold);
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: var(--di-black);
+}
+
+
+/* ==========================================================================
+   07. BUTTONS (global)
+   ========================================================================== */
+.btn,
+.s-button-element,
+a.btn-primary {
+  border-radius: var(--di-radius);
+  font-weight: 700;
+  letter-spacing: .2px;
+  transition: background-color var(--di-ease), color var(--di-ease),
+              border-color var(--di-ease), transform .15s ease;
+}
+
+.btn--primary,
+.btn-primary,
+.s-button-primary,
+.s-button-solid {
+  background-color: var(--di-maroon);
+  border-color: var(--di-maroon);
+  color: var(--di-on-maroon);
+}
+.btn--primary:hover,
+.btn-primary:hover,
+.s-button-primary:hover,
+.s-button-solid:hover {
+  background-color: var(--di-maroon-dark);
+  border-color: var(--di-maroon-dark);
+  color: var(--di-on-maroon);
+}
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn--outline,
+.s-button-outline {
+  background: transparent;
+  border: 1px solid var(--di-maroon);
+  color: var(--di-maroon);
+}
+.btn--outline:hover,
+.s-button-outline:hover {
+  background: var(--di-maroon);
+  color: var(--di-on-maroon);
+}
+
+
+/* ==========================================================================
+   08. FEATURES STRIP (quality / gift wrap / fast shipping / trust)
+   ========================================================================== */
+.s-block--features,
+.s-block--features-slider {
+  padding-block: 28px;
+  border-block: 1px solid var(--di-line);
+  background-color: var(--di-cream);
+}
+
+.s-block--features .feature-item,
+.s-block--features .s-features-item,
+.s-block--features-slider .feature-item {
+  background: transparent;
+  box-shadow: none;
+  text-align: center;
+}
+
+.s-block--features i,
+.s-block--features svg,
+.s-block--features-slider i {
+  color: var(--di-gold);
+  font-size: 32px;
+}
+
+.s-block--features h3,
+.s-block--features .feature-title,
+.s-block--features-slider h3 {
+  margin-block: 10px 4px;
+  color: var(--di-black);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.s-block--features p,
+.s-block--features-slider p {
+  margin: 0;
+  color: var(--di-muted);
+  font-size: 12.5px;
+}
+
+@media (max-width: 767px) {
+  .s-block--features,
+  .s-block--features-slider { padding-block: 18px; }
+}
+
+
+/* ==========================================================================
+   09. SECTION TITLES
+   Centered, with a gold line on both sides that fades outward.
+   The gradient direction flips for RTL so the fade always points away
+   from the title.
+   ========================================================================== */
+.s-block__title,
+.section-title {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-block-end: 32px;
+  text-align: center;
+}
+
+.s-block__title h2,
+.s-block__title h3,
+.section-title h2,
+.section-title h3 {
+  margin: 0;
+  color: var(--di-black);
+  font-size: 22px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.s-block__title::before,
+.s-block__title::after,
+.section-title::before,
+.section-title::after {
+  content: "";
+  flex: 0 1 90px;
+  height: 1px;
+}
+
+/* LTR: ::before sits on the left, ::after on the right */
+.s-block__title::before,
+.section-title::before {
+  background: linear-gradient(to right, transparent, var(--di-gold));
+}
+.s-block__title::after,
+.section-title::after {
+  background: linear-gradient(to left, transparent, var(--di-gold));
+}
+
+/* RTL: flex order mirrors, so swap the gradient directions */
+[dir="rtl"] .s-block__title::before,
+[dir="rtl"] .section-title::before {
+  background: linear-gradient(to left, transparent, var(--di-gold));
+}
+[dir="rtl"] .s-block__title::after,
+[dir="rtl"] .section-title::after {
+  background: linear-gradient(to right, transparent, var(--di-gold));
+}
+
+/* "View all" link */
+.s-block__display-all {
+  position: absolute;
+  inset-inline-end: 0;
+  color: var(--di-maroon);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+@media (max-width: 767px) {
+  .s-block__title,
+  .section-title { gap: 10px; margin-block-end: 22px; }
+
+  .s-block__title h2,
+  .section-title h2 { font-size: 18px; }
+
+  .s-block__title::before,
+  .s-block__title::after,
+  .section-title::before,
+  .section-title::after { flex-basis: 40px; }
+}
+
+
+/* ==========================================================================
+   10. SHOP BY CATEGORY
+   Arabic title bold black; English subtitle in maroon directly beneath.
+   ========================================================================== */
+.s-block--categories .s-block__content,
+.s-block--categories .grid,
+.s-block--banners .grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.s-block--categories a,
+.s-block--categories .category-card,
+.s-block--banners .banner-entry {
+  display: block;
+  overflow: hidden;
+  border-radius: var(--di-radius);
+  background-color: var(--di-white);
+  box-shadow: var(--di-shadow);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+.s-block--categories a:hover,
+.s-block--banners .banner-entry:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--di-shadow-lg);
+}
+
+.s-block--categories img,
+.s-block--banners img {
+  width: 100%;
+  aspect-ratio: 4 / 4.4;
+  object-fit: cover;
+  border-radius: 0;
+  transition: transform .5s ease;
+}
+.s-block--categories a:hover img {
+  transform: scale(1.04);
+}
+
+.s-block--categories h3,
+.s-block--categories .category-title,
+.s-block--categories .title {
+  margin: 0;
+  padding: 14px 12px 2px;
+  color: var(--di-black);
+  font-size: 16px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.s-block--categories p,
+.s-block--categories .category-subtitle,
+.s-block--categories .subtitle {
+  margin: 0;
+  padding: 0 12px 14px;
+  color: var(--di-maroon);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+@media (max-width: 991px) {
+  .s-block--categories .s-block__content,
+  .s-block--categories .grid,
+  .s-block--banners .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+}
+
+
+/* ==========================================================================
+   11. PRODUCT CARDS
+   Targets the salla-product-card component output (.s-product-card-*) and
+   the Raed-style custom card (.product-entry*). Unused selectors are harmless.
+   ========================================================================== */
+.s-product-card-entry,
+.product-entry {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--di-line);
+  border-radius: var(--di-radius);
+  background-color: var(--di-white);
+  box-shadow: none;
+  transition: box-shadow .3s ease, transform .3s ease;
+}
+.s-product-card-entry:hover,
+.product-entry:hover {
+  box-shadow: var(--di-shadow);
+  transform: translateY(-3px);
+}
+
+/* Vertical (portrait) image container */
+.s-product-card-image,
+.product-entry__image {
+  margin: 0;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  border-radius: 0;
+  background-color: var(--di-cream-dark);
+}
+.s-product-card-image img,
+.product-entry__image img {
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  object-fit: contain;
+  transition: transform .5s ease;
+}
+.s-product-card-entry:hover .s-product-card-image img,
+.product-entry:hover .product-entry__image img {
+  transform: scale(1.05);
+}
+
+/* Content — bottom padding reserves room for the cart button */
+.s-product-card-content,
+.product-entry__content {
+  flex: 1;
+  padding: 14px 14px 58px;
+  text-align: start;
+}
+
+/* Name */
+.s-product-card-content-title,
+.s-product-card-content-title a,
+.product-entry__title,
+.product-entry__title a {
+  margin-block-end: 2px;
+  color: var(--di-black);
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+.s-product-card-content-title a:hover,
+.product-entry__title a:hover {
+  color: var(--di-maroon);
+}
+
+.s-product-card-content-subtitle,
+.product-entry__subtitle {
+  color: var(--di-muted);
+  font-size: 12px;
+}
+
+/* Price — prominent */
+.s-product-card-price,
+.s-product-card-sale-price h4,
+.product-entry__price,
+.s-product-card-content .total-price {
+  margin-block-start: 8px;
+  color: var(--di-black);
+  font-size: 18px;
+  font-weight: 800;
+}
+.s-product-card-sale-price h4 {
+  color: var(--di-maroon);
+}
+.s-product-card-sale-price .before-discount {
+  color: #9A9A9A;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Promotion badge */
+.s-product-card-promotion-title {
+  border-radius: var(--di-radius);
+  background-color: var(--di-maroon);
+  color: var(--di-on-maroon);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Wishlist */
+.s-product-card-wishlist-btn,
+.s-product-card-wishlist-btn button {
+  border-radius: 50%;
+  background-color: var(--di-white);
+  color: var(--di-black);
+}
+.s-product-card-wishlist-btn:hover {
+  color: var(--di-maroon);
+}
+
+/* Grid gaps */
+.s-products-list-vertical-cards,
+.s-products-list-horizontal-cards {
+  gap: var(--di-card-gap);
+}
+
+@media (max-width: 767px) {
+  .s-product-card-content,
+  .product-entry__content { padding: 10px 10px 54px; }
+
+  .s-product-card-content-title,
+  .product-entry__title { font-size: 13.5px; }
+
+  .s-product-card-price,
+  .s-product-card-sale-price h4,
+  .product-entry__price { font-size: 16px; }
+}
+
+
+/* ==========================================================================
+   12. QUICK ADD-TO-CART BUTTON
+   Solid maroon circle pinned to the card's bottom inline-end corner
+   (bottom-left in RTL, bottom-right in LTR). The label stays in the DOM for
+   screen readers; a cart icon is drawn with a mask.
+   ========================================================================== */
+.s-product-card-content-footer,
+.product-entry__footer {
+  position: absolute;
+  inset-block-end: 12px;
+  inset-inline-end: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  margin: 0;
+  padding: 0;
+}
+
+.s-product-card-content-footer salla-add-product-button .s-button-element,
+.s-product-card-content-footer .s-button-element,
+.product-entry__footer .s-button-element {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background-color: var(--di-maroon);
+  color: var(--di-on-maroon);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--di-maroon) 30%, transparent);
+  transition: background-color var(--di-ease), transform .2s ease;
+}
+.s-product-card-content-footer .s-button-element:hover,
+.product-entry__footer .s-button-element:hover {
+  background-color: var(--di-maroon-dark);
+  transform: scale(1.06);
+}
+
+/* Visually hide the text label, keep it accessible */
+.s-product-card-content-footer .s-button-text,
+.product-entry__footer .s-button-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Cart icon */
+.s-product-card-content-footer .s-button-element::before,
+.product-entry__footer .s-button-element::before {
+  content: "";
+  width: 18px;
+  height: 18px;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 7h12l-1 13H7L6 7z'/%3E%3Cpath d='M9 7a3 3 0 0 1 6 0'/%3E%3C/svg%3E") center / contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 7h12l-1 13H7L6 7z'/%3E%3Cpath d='M9 7a3 3 0 0 1 6 0'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* Loading / disabled states stay native */
+.s-product-card-content-footer .s-button-element.s-button-disabled {
+  background-color: var(--di-line);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+@media (max-width: 767px) {
+  .s-product-card-content-footer .s-button-element,
+  .product-entry__footer .s-button-element {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+  }
+}
+
+
+/* ==========================================================================
+   13. GIFT SETS / PROMO BANNER ROW
+   ========================================================================== */
+.s-block--gifts,
+.s-block--banners-row {
+  padding: 32px 24px;
+  border: 1px solid var(--di-line);
+  border-radius: var(--di-radius);
+  background-color: var(--di-white);
+}
+.s-block--gifts img,
+.s-block--banners-row img {
+  border-radius: var(--di-radius);
+}
+
+@media (max-width: 767px) {
+  .s-block--gifts,
+  .s-block--banners-row { padding: 18px 12px; }
+}
+
+
+/* ==========================================================================
+   14. BRAND STORY
+   ========================================================================== */
+.s-block--text-and-image,
+.s-block--brand-story,
+.s-block--testimonials {
+  padding-block: 48px;
+  background-color: var(--di-cream-dark);
+}
+.s-block--text-and-image h2,
+.s-block--brand-story h2 {
+  color: var(--di-gold);
+  font-weight: 800;
+}
+.s-block--text-and-image p,
+.s-block--brand-story p {
+  max-width: 520px;
+  color: var(--di-black);
+}
+
+@media (max-width: 991px) {
+  .s-block--text-and-image,
+  .s-block--brand-story { padding-block: 36px; }
+}
+
+
+/* ==========================================================================
+   15. FORMS & INPUTS
+   ========================================================================== */
+.form-input,
+.s-form-control,
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="search"],
+input[type="password"],
+textarea,
+select {
+  border: 1px solid var(--di-line);
+  border-radius: var(--di-radius);
+  background-color: var(--di-white);
+  color: var(--di-black);
+  transition: border-color var(--di-ease), box-shadow var(--di-ease);
+}
+.form-input:focus,
+.s-form-control:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--di-maroon);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--di-maroon) 12%, transparent);
+  outline: 0;
+}
+
+
+/* ==========================================================================
+   16. PRODUCT PAGE & CART (light touch — native layout untouched)
+   ========================================================================== */
+.product-single h1,
+.product-details__title {
+  color: var(--di-black);
+  font-weight: 800;
+}
+.product-single .total-price,
+.product-single .product-price {
+  color: var(--di-maroon);
+  font-weight: 800;
+}
+
+.s-cart-summary-wrapper {
+  border: 1px solid var(--di-line);
+  border-radius: var(--di-radius);
+  background: var(--di-white);
+}
+.s-cart-item {
+  border-radius: var(--di-radius);
+}
+
+
+/* ==========================================================================
+   17. FOOTER
+   ========================================================================== */
+.store-footer {
+  background-color: var(--di-black);
+  color: #EDE7DA;
+}
+.store-footer a,
+.store-footer p,
+.store-footer li {
+  color: #CFC7B6;
+}
+.store-footer a:hover {
+  color: var(--di-gold);
+}
+
+.store-footer h3,
+.store-footer h4,
+.store-footer .footer-title {
+  margin-block-end: 14px;
+  color: var(--di-gold);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.store-footer .social-link a,
+.store-footer .s-social-link a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(176, 141, 87, .4);
+  border-radius: 50%;
+  color: var(--di-gold);
+  transition: background-color var(--di-ease), color var(--di-ease);
+}
+.store-footer .social-link a:hover,
+.store-footer .s-social-link a:hover {
+  background-color: var(--di-gold);
+  color: var(--di-black);
+}
+
+.store-footer .copyright,
+.store-footer .footer-bottom {
+  border-block-start: 1px solid rgba(255, 255, 255, .08);
+  color: #9D958A;
+  font-size: 12.5px;
+}
+
+@media (max-width: 767px) {
+  .store-footer { text-align: center; }
+}
+
+
+/* ==========================================================================
+   18. ACCESSIBILITY
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none;
+    animation: none;
+    scroll-behavior: auto;
+  }
+}
+
+
+/* ==========================================================================
+   ===  PART 2 — THEME COMPONENT LAYER (added during Twig integration)    ===
+   This theme ships without Raed/Twilight's app.css, so the base layout and
+   the markup-specific rules the components need live here. Everything still
+   reads the --di-* tokens; no hard-coded brand colors.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   19. STANDALONE BASE
+   ========================================================================== */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; }
+
+img,
+svg { max-width: 100%; }
+img { display: block; height: auto; }
+button { font: inherit; }
+
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+@media (max-width: 767px) {
+  .container { padding-inline: 14px; }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+/* ==========================================================================
+   20. HEADER (components/header.twig)
+   Desktop: nav at the start edge, icons at the end edge, logo dead-center.
+   Mobile: burger | logo | icons, nav opens as a panel under the bar.
+   ========================================================================== */
+.store-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 40;
+}
+.store-header .container { gap: 16px; }
+
+.header-start,
+.header-end {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 1 0;
+  min-width: 0;
+}
+.header-end { justify-content: flex-end; }
+
+.navbar-brand {
+  display: inline-flex;
+  align-items: center;
+  color: var(--di-black);
+  font-size: 22px;
+  font-weight: 800;
+  text-decoration: none;
+}
+.navbar-brand svg {
+  max-height: 56px;
+  width: auto;
+}
+
+.header-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0;
+  cursor: pointer;
+}
+.header-btn svg { width: 24px; height: 24px; }
+
+/* Salla's cart-summary wrapper is also styled as a boxed cart on the cart
+   page (section 16); inside the header it must stay a bare icon. */
+.store-header .s-cart-summary-wrapper {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* <salla-menu> renders its own list; style it like .main-menu */
+.store-header salla-menu ul {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.store-header salla-menu a {
+  color: var(--di-maroon);
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.store-header salla-menu a:hover { color: var(--di-gold); }
+
+.mburger { display: none; }
+
+@media (max-width: 991px) {
+  .mburger { display: inline-flex; }
+
+  .main-nav {
+    display: none;
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 100%;
+    z-index: 30;
+    padding: 12px 20px 18px;
+    border-block-end: 1px solid var(--di-line);
+    box-shadow: var(--di-shadow);
+  }
+  .main-nav.is-open { display: block; }
+
+  .store-header salla-menu ul {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+  .store-header salla-menu a {
+    display: block;
+    padding-block: 12px;
+    border-block-end: 1px solid var(--di-line);
+  }
+}
+
+
+/* ==========================================================================
+   21. HERO BANNER (components/hero-banner.twig)
+   Image slides: light text over a dark scrim.  Static fallback: cream panel.
+   ========================================================================== */
+.hb-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: var(--di-cream);
+}
+
+.hb-hero__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding: clamp(48px, 7vw, 96px) clamp(20px, 5vw, 48px);
+}
+.hb-hero__inner {
+  max-width: 600px;
+  text-align: start;
+}
+
+/* Ornamental rule: gold line that fades away from the diamond */
+.hb-hero__rule {
+  display: block;
+  position: relative;
+  width: 74px;
+  height: 1px;
+  margin: 0 0 24px;
+  background: linear-gradient(to right, var(--di-gold), transparent);
+}
+[dir="rtl"] .hb-hero__rule {
+  background: linear-gradient(to left, var(--di-gold), transparent);
+}
+.hb-hero__rule::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: -1px;
+  inset-block-start: 50%;
+  width: 7px;
+  height: 7px;
+  transform: translateY(-50%) rotate(45deg);
+  background-color: var(--di-gold);
+}
+
+.hb-hero__title {
+  margin: 0 0 16px;
+  color: var(--di-white);
+  font-size: clamp(30px, 5vw, 56px);
+  font-weight: 800;
+  line-height: 1.2;
+}
+.hb-hero__subtitle {
+  max-width: 52ch;
+  margin: 0 0 30px;
+  color: color-mix(in srgb, var(--di-white) 88%, transparent);
+  font-size: clamp(14px, 1.55vw, 18px);
+  font-weight: 500;
+  line-height: 1.9;
+}
+
+.hb-hero__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 34px;
+  font-size: 15px;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.hb-hero__cta svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  transition: translate var(--di-ease);
+}
+.hb-hero__cta:hover svg { translate: -4px 0; }
+[dir="ltr"] .hb-hero__cta svg { transform: scaleX(-1); }
+[dir="ltr"] .hb-hero__cta:hover svg { translate: 4px 0; }
+
+/* ---- slider mode ---- */
+.hb-hero__viewport { position: relative; }
+.hb-hero__track {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.hb-hero__track::-webkit-scrollbar { display: none; }
+
+.hb-hero__slide {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 100%;
+  min-height: clamp(430px, 64vh, 720px);
+  overflow: hidden;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  background: linear-gradient(135deg, var(--di-cream-dark), var(--di-cream));
+}
+.hb-hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.hb-hero__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hb-hero__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(to right,
+      color-mix(in srgb, var(--di-black) 88%, transparent) 0%,
+      color-mix(in srgb, var(--di-black) 62%, transparent) 36%,
+      color-mix(in srgb, var(--di-black) 18%, transparent) 70%,
+      transparent 100%),
+    linear-gradient(to top,
+      color-mix(in srgb, var(--di-black) 45%, transparent) 0%,
+      transparent 58%);
+}
+[dir="rtl"] .hb-hero__scrim {
+  background:
+    linear-gradient(to left,
+      color-mix(in srgb, var(--di-black) 88%, transparent) 0%,
+      color-mix(in srgb, var(--di-black) 62%, transparent) 36%,
+      color-mix(in srgb, var(--di-black) 18%, transparent) 70%,
+      transparent 100%),
+    linear-gradient(to top,
+      color-mix(in srgb, var(--di-black) 45%, transparent) 0%,
+      transparent 58%);
+}
+
+.hb-hero__nav {
+  position: absolute;
+  inset-block-start: 50%;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  transform: translateY(-50%);
+  border: 1px solid color-mix(in srgb, var(--di-gold-soft) 60%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--di-black) 35%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+          backdrop-filter: blur(8px);
+  color: var(--di-white);
+  cursor: pointer;
+  transition: background-color var(--di-ease), border-color var(--di-ease);
+}
+.hb-hero__nav:hover {
+  border-color: var(--di-gold);
+  background: color-mix(in srgb, var(--di-gold) 55%, transparent);
+}
+.hb-hero__nav--prev { inset-inline-start: clamp(12px, 2.5vw, 28px); }
+.hb-hero__nav--next { inset-inline-end: clamp(12px, 2.5vw, 28px); }
+[dir="ltr"] .hb-hero__nav svg { transform: scaleX(-1); }
+
+.hb-hero__dots {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: clamp(14px, 3vw, 28px);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.hb-hero__dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--di-white) 45%, transparent);
+  cursor: pointer;
+  transition: width var(--di-ease), background-color var(--di-ease);
+}
+.hb-hero__dot.is-active {
+  width: 26px;
+  border-radius: 8px;
+  background: var(--di-gold);
+}
+
+/* ---- static fallback ---- */
+.hb-hero--static {
+  background:
+    radial-gradient(1100px 620px at 88% 8%, color-mix(in srgb, var(--di-gold) 18%, transparent), transparent 62%),
+    linear-gradient(160deg, var(--di-cream), var(--di-cream-dark));
+}
+.hb-hero__pattern {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--di-gold);
+  opacity: .35;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(120% 100% at 50% 40%, #000 20%, transparent 78%);
+          mask-image: radial-gradient(120% 100% at 50% 40%, #000 20%, transparent 78%);
+}
+.hb-hero--static .hb-hero__content {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+  align-items: center;
+  gap: clamp(24px, 5vw, 64px);
+  padding-block: clamp(56px, 8vw, 110px);
+}
+.hb-hero--static .hb-hero__title { color: var(--di-gold); }
+.hb-hero--static .hb-hero__subtitle { color: var(--di-black); }
+
+.hb-hero__art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  z-index: 1;
+}
+.hb-hero__art::before {
+  content: "";
+  position: absolute;
+  width: min(78%, 360px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--di-gold) 26%, transparent), transparent 68%);
+}
+.hb-hero__bottle {
+  position: relative;
+  width: min(100%, 300px);
+  height: auto;
+  filter: drop-shadow(0 26px 40px color-mix(in srgb, var(--di-black) 18%, transparent));
+  animation: di-float 7s ease-in-out infinite;
+}
+@keyframes di-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-12px); }
+}
+
+.hb-hero__perks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  margin: 32px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--di-muted);
+  font-size: 13px;
+}
+.hb-hero__perks li {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+.hb-hero__perks li::before {
+  content: "";
+  flex: none;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--di-gold);
+}
+
+@media (max-width: 900px) {
+  .hb-hero__slide { min-height: clamp(400px, 72vh, 560px); }
+
+  .hb-hero--static .hb-hero__content {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+  .hb-hero--static .hb-hero__inner { max-width: 100%; text-align: center; order: 2; }
+  .hb-hero__art { order: 1; }
+  .hb-hero__bottle { width: min(58%, 190px); }
+  .hb-hero__rule { margin-inline: auto; }
+  .hb-hero__perks { justify-content: center; }
+  .hb-hero--static .hb-hero__subtitle { margin-inline: auto; }
+}
+@media (max-width: 640px) {
+  .hb-hero__nav { width: 40px; height: 40px; }
+  .hb-hero__cta { padding: 14px 28px; font-size: 14px; }
+}
+
+
+/* ==========================================================================
+   22. SECTION SUBTITLE (shared by products / testimonials)
+   ========================================================================== */
+.s-block__subtitle {
+  margin: 0;
+  color: var(--di-muted);
+  font-size: 14px;
+  text-align: center;
+}
+.s-block__title + .s-block__subtitle {
+  margin-block: -22px 28px;
+}
+
+
+/* ==========================================================================
+   23. SHOP BY CATEGORY (components/shop-by-category.twig)
+   Card layout comes from section 10; this adds the image placeholder.
+   ========================================================================== */
+.di-placeholder {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 4.4;
+  background-color: var(--di-cream-dark);
+}
+.di-placeholder[hidden],
+img[hidden] { display: none; }
+.di-placeholder__icon {
+  width: 46%;
+  height: auto;
+}
+.s-block--categories a { text-decoration: none; }
+
+
+/* ==========================================================================
+   24. FEATURED PRODUCTS (components/featured-products.twig)
+   Card look comes from sections 11-12; this adds the grid + placeholders.
+   ========================================================================== */
+.featured-products__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--di-card-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 768px)  { .featured-products__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .featured-products__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+.s-product-card-image {
+  position: relative;
+  display: block;
+}
+.s-product-card-image svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.s-product-card-promotion-title {
+  position: absolute;
+  inset-block-start: 10px;
+  inset-inline-start: 10px;
+  z-index: 2;
+  padding: 3px 10px;
+}
+
+.fp-card__cat {
+  display: block;
+  margin-block-end: 2px;
+  color: var(--di-gold);
+  font-size: 12px;
+  font-weight: 600;
+}
+h3.s-product-card-content-title { margin: 0 0 2px; }
+.s-product-card-content-title a {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-decoration: none;
+}
+.s-product-card-sale-price {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin-block-start: 8px;
+}
+.s-product-card-sale-price h4 { margin: 0; }
+
+
+/* ==========================================================================
+   25. STORE FEATURES (components/store-features.twig)
+   Strip look comes from section 08; this adds the grid + icon sizing.
+   ========================================================================== */
+.store-features__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+.store-features__icon {
+  display: flex;
+  justify-content: center;
+  color: var(--di-gold);
+}
+.store-features__icon svg,
+.store-features__icon img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+@media (max-width: 991px) {
+  .store-features__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+}
+
+
+/* ==========================================================================
+   26. TESTIMONIALS (components/testimonials.twig)
+   Section band comes from section 14; mobile = scroll-snap, desktop = grid.
+   ========================================================================== */
+.tst-track {
+  display: flex;
+  gap: 18px;
+  margin-inline: -4px;
+  padding: 12px 4px 24px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.tst-track::-webkit-scrollbar { display: none; }
+
+.tst-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 0 0 86%;
+  max-width: 430px;
+  padding: 28px 24px 22px;
+  overflow: hidden;
+  scroll-snap-align: center;
+  border: 1px solid var(--di-line);
+  border-radius: var(--di-radius);
+  background-color: var(--di-white);
+  box-shadow: var(--di-shadow);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+.tst-card::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 0;
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--di-gold), transparent);
+}
+.tst-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--di-shadow-lg);
+}
+
+.tst-quote {
+  position: absolute;
+  inset-block-start: 18px;
+  inset-inline-end: 18px;
+  width: 40px;
+  height: 40px;
+  fill: var(--di-gold);
+  opacity: .18;
+  pointer-events: none;
+}
+.tst-stars { display: inline-flex; gap: 4px; line-height: 0; }
+.tst-star { fill: var(--di-line); }
+.tst-star.is-on { fill: var(--di-gold); }
+
+.tst-comment {
+  flex: 1 1 auto;
+  margin: 0;
+  color: var(--di-black);
+  font-size: 15px;
+  line-height: 1.9;
+  text-align: start;
+}
+
+.tst-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-block-start: 16px;
+  border-block-start: 1px dashed var(--di-gold-soft);
+}
+.tst-avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  overflow: hidden;
+  border-radius: 50%;
+  background-color: var(--di-maroon);
+  color: var(--di-on-maroon);
+  font-size: 18px;
+  font-weight: 800;
+}
+.tst-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.tst-author-info { display: flex; flex-direction: column; min-width: 0; }
+.tst-name { color: var(--di-black); font-size: 15px; font-weight: 800; }
+.tst-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--di-muted);
+  font-size: 12.5px;
+}
+.tst-meta svg { fill: var(--di-gold); }
+
+.tst-nav { display: flex; justify-content: center; gap: 12px; }
+.tst-nav-btn {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--di-line);
+  border-radius: 50%;
+  background-color: var(--di-white);
+  color: var(--di-maroon);
+  cursor: pointer;
+  transition: background-color var(--di-ease), color var(--di-ease);
+}
+.tst-nav-btn svg { fill: currentColor; }
+.tst-nav-btn:hover {
+  background-color: var(--di-maroon);
+  color: var(--di-on-maroon);
+}
+[dir="rtl"] .tst-nav-btn svg { transform: scaleX(-1); }
+
+@media (min-width: 640px) {
+  .tst-card { flex-basis: 47%; }
+}
+@media (min-width: 992px) {
+  .tst-track {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    margin-inline: 0;
+    padding: 8px 0 0;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+  .tst-card { flex: none; max-width: none; height: 100%; }
+  .tst-nav { display: none; }
+}
+
+
+/* ==========================================================================
+   27. FOOTER LAYOUT (components/footer.twig)
+   Colors/headings/social/copyright come from section 17.
+   ========================================================================== */
+.footer__top {
+  padding: 40px 0 32px;
+  border-block-end: 1px solid color-mix(in srgb, var(--di-gold) 22%, transparent);
+}
+.footer__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: 20px;
+  text-align: center;
+}
+.footer__logo-link { display: inline-block; text-decoration: none; }
+.footer__logo--img { display: block; width: auto; max-height: 48px; }
+.footer__logo--svg { display: inline-block; line-height: 0; }
+.footer__logo--svg svg { width: auto; max-height: 48px; fill: var(--di-gold); }
+.footer__logo--text { color: var(--di-gold); font-size: 24px; font-weight: 800; }
+.footer__tagline { max-width: 520px; margin: 0; font-size: 14px; line-height: 1.9; }
+
+.footer__middle {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding: 40px 20px 32px;
+}
+.footer__column { display: flex; flex-direction: column; gap: 14px; }
+
+.footer__heading {
+  position: relative;
+  margin: 0;
+  padding-inline-start: 12px;
+}
+.footer__heading-accent {
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: 50%;
+  width: 3px;
+  height: 1.1em;
+  transform: translateY(-50%);
+  border-radius: 2px;
+  background-color: var(--di-gold);
+}
+
+.footer__column--menu salla-menu ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.footer__column--menu salla-menu a { text-decoration: none; }
+
+.footer__contact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.footer__contact-item { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; }
+.footer__contact-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border: 1px solid color-mix(in srgb, var(--di-gold) 30%, transparent);
+  border-radius: 50%;
+  background-color: color-mix(in srgb, var(--di-gold) 10%, transparent);
+}
+.footer__contact-icon svg { display: block; fill: var(--di-gold); }
+.footer__contact-link { text-decoration: none; word-break: break-word; }
+.footer__contact-item--empty,
+.footer__social-empty { margin: 0; font-size: 13px; font-style: italic; }
+
+.footer__social-list { display: flex; flex-wrap: wrap; gap: 10px; }
+.footer__social-link svg { display: block; fill: currentColor; }
+
+.footer__bottom-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding: 20px;
+  text-align: center;
+}
+.footer__copyright { margin: 0; }
+
+@media (min-width: 640px) {
+  .footer__middle { grid-template-columns: 1fr 1fr; }
+  .footer__bottom-inner { flex-direction: row; justify-content: space-between; text-align: start; }
+}
+@media (min-width: 992px) {
+  .footer__middle { grid-template-columns: 1.2fr 1fr 1fr; gap: 48px; }
+  .footer__brand { align-items: flex-start; text-align: start; }
+}
+@media (max-width: 767px) {
+  .footer__contact-item { justify-content: center; }
+  .footer__heading { padding-inline-start: 0; }
+  .footer__heading-accent { display: none; }
+}

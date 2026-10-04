@@ -1,0 +1,219 @@
+{# ============================================================================
+   components/featured-products.twig — Dokhoon Iris
+   Featured Products / Best Sellers
+   ----------------------------------------------------------------------------
+   Usage:  {% include 'components.featured-products' %}
+
+   Optional context variables:
+     products           array   Salla product objects (Twilight product model)
+     title              string  Section heading          (default: الأكثر مبيعاً)
+     subtitle           string  Line under the heading   (default: منتجات مختارة بعناية)
+     view_all_url       string  "View all" link          (default: #)
+     view_all_label     string  "View all" text          (default: عرض الكل)
+     add_to_cart_label  string  Cart button label        (default: أضف إلى السلة)
+
+   Card markup uses Salla's own card class names (s-product-card-*) so the
+   styles in dokhoon-iris.css sections 11-12 and 24 apply 1:1.
+   ============================================================================ #}
+
+{% set has_products = products is defined and products is not empty %}
+
+{% set section_title    = title|default('الأكثر مبيعاً') %}
+{% set section_eyebrow  = subtitle|default('منتجات مختارة بعناية') %}
+{% set all_url          = view_all_url|default('#') %}
+{% set all_label        = view_all_label|default('عرض الكل') %}
+{% set add_label        = add_to_cart_label|default('أضف إلى السلة') %}
+
+<section class="s-block s-block--products featured-products" id="products" aria-labelledby="fp-heading">
+  <div class="container">
+
+    {# ------------------------------ Header ------------------------------ #}
+    <div class="s-block__title">
+      <h2 id="fp-heading">{{ section_title }}</h2>
+      {% if all_url %}
+        <a class="s-block__display-all" href="{{ all_url }}">{{ all_label }}</a>
+      {% endif %}
+    </div>
+    {% if section_eyebrow %}
+      <p class="s-block__subtitle">{{ section_eyebrow }}</p>
+    {% endif %}
+
+    {# --------------------------- Products grid -------------------------- #}
+    <ul class="featured-products__grid s-products-list-vertical-cards">
+
+      {% if has_products %}
+        {# ======================= DYNAMIC MODE ======================= #}
+        {% for product in products %}
+          {# Salla exposes is_on_sale / sale_price / regular_price; fall back to
+             the older sale_price/price pair if a field is missing. #}
+          {% set is_on_sale = product.is_on_sale is defined
+                              ? product.is_on_sale
+                              : (product.sale_price is defined and product.sale_price) %}
+          {% set current_price = (is_on_sale and product.sale_price is defined and product.sale_price)
+                                 ? product.sale_price
+                                 : product.price %}
+          {% set was_price = (product.regular_price is defined and product.regular_price)
+                             ? product.regular_price
+                             : product.price %}
+
+          <li class="s-product-card-entry">
+            <a class="s-product-card-image" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
+              {% if product.promotion_title %}
+                <span class="s-product-card-promotion-title">{{ product.promotion_title }}</span>
+              {% endif %}
+
+              {# ---------- Safe image rendering ---------- #}
+              {% if product.image.url is defined and product.image.url %}
+                <img src="{{ product.image.url }}"
+                     alt="{{ product.image.alt | default(product.name) }}"
+                     width="400"
+                     height="400"
+                     loading="lazy"
+                     decoding="async">
+              {% elseif product.image is defined and product.image is not empty %}
+                <img src="{{ product.image }}"
+                     alt="{{ product.name }}"
+                     width="400"
+                     height="400"
+                     loading="lazy"
+                     decoding="async">
+              {% else %}
+                {# Placeholder when no image is available #}
+                <svg viewBox="0 0 400 400" role="img"
+                aria-label="{{ product.name }}" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                <linearGradient id="fpPh{{ product.id }}" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#F9F6F0"/>
+                <stop offset="100%" stop-color="#F1EBDF"/>
+                </linearGradient>
+                </defs>
+                <rect width="400" height="400" fill="url(#fpPh{{ product.id }})"/>
+                <circle cx="200" cy="215" r="126" fill="#ffffff" opacity=".38"/>
+                <rect x="176" y="84" width="48" height="36" rx="7" fill="#B08D57" opacity=".75"/>
+                <rect x="188" y="118" width="24" height="16" rx="3" fill="#B08D57" opacity=".6"/>
+                <path d="M152 132h96a22 22 0 0 1 22 22v122a30 30 0 0 1-30 30H160a30 30 0 0 1-30-30V154a22 22 0 0 1 22-22z"
+                fill="#ffffff" fill-opacity=".85" stroke="#B08D57" stroke-width="2.5" stroke-opacity=".5"/>
+                <rect x="168" y="228" width="64" height="40" rx="7"
+                fill="#FFFFFF" stroke="#D9C7A3" opacity=".92"/>
+                </svg>
+              {% endif %}
+            </a>
+
+            <div class="s-product-card-content">
+              {% if product.category.name is defined and product.category.name %}
+                <span class="fp-card__cat">{{ product.category.name }}</span>
+              {% endif %}
+
+              <h3 class="s-product-card-content-title">
+                <a href="{{ product.url }}">{{ product.name }}</a>
+              </h3>
+
+              {% if is_on_sale and was_price %}
+                <div class="s-product-card-sale-price">
+                  <h4>{{ current_price | money }}</h4>
+                  <span class="before-discount">{{ was_price | money }}</span>
+                </div>
+              {% else %}
+                <div class="s-product-card-price">{{ current_price | money }}</div>
+              {% endif %}
+
+              {# ---------- Add to cart (Salla web component) ---------- #}
+              <div class="s-product-card-content-footer">
+                <salla-add-product-button
+                  product-id="{{ product.id }}"
+                  product-status="{{ product.status }}"
+                  product-type="{{ product.type }}"
+                  aria-label="{{ add_label }}">
+                </salla-add-product-button>
+              </div>
+            </div>
+          </li>
+        {% endfor %}
+
+      {% else %}
+        {# ======================= FALLBACK MODE ======================= #}
+        {% set fallback_items = [
+          { name: 'عطر عود رويال الفاخر',  category: 'عطور شرقية',  price: '1,250.00 ر.س', old_price: '1,500.00 ر.س', badge: 'الأكثر مبيعاً' },
+          { name: 'مسك أبيض نقي',          category: 'عطور مسكية',  price: '890.00 ر.س',   old_price: null,            badge: null },
+          { name: 'زهرة الياسمين الدمشقي', category: 'عطور زهرية',  price: '995.00 ر.س',   old_price: '1,150.00 ر.س', badge: 'خصم 15%' },
+          { name: 'عنبر الصحراء الذهبي',   category: 'عطور عنبرية', price: '1,420.00 ر.س', old_price: null,            badge: 'جديد' }
+        ] %}
+
+        {% for item in fallback_items %}
+          {% set i = loop.index %}
+
+          <li class="s-product-card-entry">
+            <div class="s-product-card-image">
+              {% if item.badge %}
+                <span class="s-product-card-promotion-title">{{ item.badge }}</span>
+              {% endif %}
+
+              <svg viewBox="0 0 400 400" role="img"
+              aria-label="{{ item.name }}" preserveAspectRatio="xMidYMid slice">
+              <defs>
+              <linearGradient id="fpBg{{ i }}" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#F9F6F0"/>
+              <stop offset="100%" stop-color="#F1EBDF"/>
+              </linearGradient>
+              <linearGradient id="fpGlass{{ i }}" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#ffffff" stop-opacity=".95"/>
+              <stop offset="100%" stop-color="#D9C7A3" stop-opacity=".75"/>
+              </linearGradient>
+              <linearGradient id="fpCap{{ i }}" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#D9C7A3"/>
+              <stop offset="100%" stop-color="#8A6D3F"/>
+              </linearGradient>
+              </defs>
+              
+              <rect width="400" height="400" fill="url(#fpBg{{ i }})"/>
+              <circle cx="200" cy="215" r="126" fill="#ffffff" opacity=".38"/>
+              
+              <!-- cap -->
+              <rect x="176" y="84" width="48" height="36" rx="7" fill="url(#fpCap{{ i }})"/>
+              <rect x="188" y="118" width="24" height="16" rx="3" fill="#B08D57" opacity=".75"/>
+              
+              <!-- bottle -->
+              <path d="M152 132h96a22 22 0 0 1 22 22v122a30 30 0 0 1-30 30H160a30 30 0 0 1-30-30V154a22 22 0 0 1 22-22z"
+              fill="url(#fpGlass{{ i }})" stroke="#B08D57" stroke-width="2.5" stroke-opacity=".5"/>
+              
+              <!-- liquid -->
+              <path d="M132 216h136v60a30 30 0 0 1-30 30H162a30 30 0 0 1-30-30z"
+              fill="#B08D57" opacity=".32"/>
+              
+              <!-- highlight -->
+              <rect x="150" y="158" width="12" height="96" rx="6" fill="#ffffff" opacity=".6"/>
+              
+              <!-- label -->
+              <rect x="168" y="228" width="64" height="40" rx="7"
+              fill="#FFFFFF" stroke="#D9C7A3" opacity=".92"/>
+              </svg>
+            </div>
+
+            <div class="s-product-card-content">
+              <span class="fp-card__cat">{{ item.category }}</span>
+
+              <h3 class="s-product-card-content-title"><a href="#">{{ item.name }}</a></h3>
+
+              {% if item.old_price %}
+                <div class="s-product-card-sale-price">
+                  <h4>{{ item.price }}</h4>
+                  <span class="before-discount">{{ item.old_price }}</span>
+                </div>
+              {% else %}
+                <div class="s-product-card-price">{{ item.price }}</div>
+              {% endif %}
+
+              {# Same markup salla-add-product-button renders, so the CSS icon applies #}
+              <div class="s-product-card-content-footer">
+                <button type="button" class="s-button-element s-button-solid s-button-primary">
+                  <span class="s-button-text">{{ add_label }}</span>
+                </button>
+              </div>
+            </div>
+          </li>
+        {% endfor %}
+      {% endif %}
+
+    </ul>
+  </div>
+</section>
