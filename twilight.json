@@ -1,0 +1,152 @@
+{
+  "name": {
+    "ar": "دخون إيريس",
+    "en": "DOKHOON IRIS"
+  },
+  "repository": "",
+  "support_url": "",
+  "version": "1.0.0",
+  "author_email": "",
+  "features": [
+    "fonts",
+    "color",
+    "breadcrumb"
+  ],
+  "settings": [
+    {
+      "type": "boolean",
+      "icon": "sicon-toggle-off",
+      "label": "تفعيل الشريط العلوي",
+      "description": null,
+      "id": "announcement_enabled",
+      "format": "switch",
+      "required": false,
+      "value": true,
+      "selected": true
+    },
+    {
+      "type": "string",
+      "icon": "sicon-format-text-alt",
+      "label": "نص الشريط العلوي (إعلان الشحن)",
+      "id": "announcement_text",
+      "format": "text",
+      "required": false,
+      "value": "شحن مجاني للطلبات فوق 200 ريال",
+      "multilanguage": true
+    },
+    {
+      "type": "string",
+      "icon": "sicon-image",
+      "label": "شعار الموقع (Logo)",
+      "id": "store_logo",
+      "format": "image",
+      "required": false
+    },
+    {
+      "id": "hero_slides",
+      "type": "collection",
+      "format": "collection",
+      "icon": "sicon-image-carousel",
+      "required": false,
+      "minLength": 0,
+      "maxLength": 8,
+      "label": "شرائح البانر الرئيسي",
+      "item_label": "شريحة",
+      "fields": [
+        {
+          "id": "image",
+          "type": "string",
+          "icon": "sicon-image",
+          "format": "image",
+          "label": "الصورة",
+          "required": true
+        },
+        {
+          "id": "title",
+          "type": "string",
+          "icon": "sicon-format-text-alt",
+          "format": "text",
+          "label": "العنوان",
+          "required": false,
+          "multilanguage": true,
+          "maxLength": 100
+        },
+        {
+          "id": "sub_title",
+          "type": "string",
+          "icon": "sicon-typography",
+          "format": "textarea",
+          "label": "العنوان الفرعي",
+          "required": false,
+          "multilanguage": true,
+          "maxLength": 255
+        },
+        {
+          "id": "btn_text",
+          "type": "string",
+          "icon": "sicon-format-text-alt",
+          "format": "text",
+          "label": "نص الزر",
+          "required": false,
+          "multilanguage": true,
+          "maxLength": 40
+        },
+        {
+          "id": "btn_url",
+          "type": "string",
+          "icon": "sicon-link",
+          "format": "text",
+          "label": "رابط الزر",
+          "required": false
+        }
+      ]
+    },
+    {
+      "type": "string",
+      "icon": "sicon-format-text-alt",
+      "label": "عنوان قسم القصة",
+      "id": "story_title",
+      "format": "text",
+      "required": false,
+      "value": "قصتنا",
+      "multilanguage": true
+    },
+    {
+      "type": "string",
+      "icon": "sicon-typography",
+      "label": "نص قصة العلامة",
+      "id": "story_text",
+      "format": "textarea",
+      "required": false,
+      "value": "من قلب الجزيرة العربية، نصنع عطوراً تروي حكايات الأصالة والفخامة.",
+      "multilanguage": true
+    },
+    {
+      "type": "string",
+      "icon": "sicon-image",
+      "label": "صورة قسم القصة",
+      "id": "story_image",
+      "format": "image",
+      "required": false
+    },
+    {
+      "type": "string",
+      "icon": "sicon-link",
+      "label": "رابط زر «تعرف علينا أكثر»",
+      "id": "story_link",
+      "format": "text",
+      "required": false
+    },
+    {
+      "type": "string",
+      "icon": "sicon-format-text-alt",
+      "label": "نص حقوق النشر",
+      "id": "copyright_text",
+      "format": "text",
+      "required": false,
+      "value": "جميع الحقوق محفوظة DOKHOON IRIS",
+      "multilanguage": true
+    }
+  ],
+  "components": []
+}

@@ -1,0 +1,22 @@
+{#
+  pages/product/index.twig — products listing (category / offers / tag / search).
+  Salla supplies: products, page.title, sort_list (docs: Products listing).
+#}
+{% extends "layouts.master" %}
+
+{% block content %}
+  <section class="container section">
+    <nav class="breadcrumbs"><salla-breadcrumb></salla-breadcrumb></nav>
+    <h1 class="section__title">{{ page.title|raw }}</h1>
+
+    {% if products|length %}
+      <div class="products-grid">
+        {% for product in products %}
+          <salla-product-card product='{{ product|json_encode }}'></salla-product-card>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>{{ trans('pages.categories.no_products') }}</p>
+    {% endif %}
+  </section>
+{% endblock %}

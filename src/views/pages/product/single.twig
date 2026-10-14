@@ -1,0 +1,183 @@
+{#
+  pages/product/single.twig — single product page (luxury layout).
+  Uses only Salla Twilight components/variables: product, salla-slider, salla-add-product-button,
+  salla-quantity-input, salla-product-options, salla-rating-stars, salla-products-slider, salla-breadcrumb.
+  Styling = design tokens from style.css (:root). All new classes are prefixed `lx-` and scoped below,
+  so app.scss / app.js stay untouched.
+#}
+{% extends "layouts.master" %}
+
+{% block content %}
+<style>
+  .lx-product {
+    --color-primary: var(--accent-btn);
+    --color-primary-dark: var(--accent-dark-gold);
+    --color-primary-light: var(--accent-gold);
+    --color-primary-reverse: #fff;
+    font-family: var(--font-family);
+    color: var(--text-primary);
+  }
+  .lx-crumbs { padding-block: 18px 0; font-size: .85rem; color: var(--text-muted); }
+  .lx-layout { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); align-items: start; }
+  .lx-gallery { background: var(--bg-media); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; padding: 14px; }
+  .lx-gallery img { border-radius: calc(var(--radius) - 2px); width: 100%; height: auto; object-fit: cover; }
+  .lx-info { display: flex; flex-direction: column; gap: 14px; }
+  .lx-title { font-family: var(--font-display); font-weight: var(--fw-xbold, 700); font-size: clamp(1.6rem, 1.3rem + 1.4vw, 2.3rem); line-height: 1.25; margin: 0; }
+  .lx-subtitle { color: var(--text-muted); font-size: 1rem; font-weight: 500; margin: 0; }
+  .lx-rule { display: flex; align-items: center; gap: 12px; color: var(--accent-gold); }
+  .lx-rule::before, .lx-rule::after { content: ""; flex: 0 0 48px; height: 1px; background: var(--accent-gold); }
+  .lx-price { display: flex; align-items: baseline; flex-wrap: wrap; gap: 12px; font-family: var(--font-family); }
+  .lx-price__now { font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem); font-weight: 700; color: var(--accent-btn); }
+  .lx-price__old { color: var(--text-muted); text-decoration: line-through; font-size: 1.05rem; }
+  .lx-price__tax { color: var(--text-muted); font-size: .8rem; }
+  .lx-form { display: flex; flex-direction: column; gap: 18px; padding-top: 18px; border-top: 1px solid var(--border-color); }
+  .lx-qty { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .lx-qty label { font-weight: 600; }
+  .lx-cta salla-add-product-button { width: 100%; display: block; }
+  .lx-tabs { margin-top: clamp(32px, 5vw, 56px); }
+  .lx-tabs__nav { display: flex; justify-content: center; gap: 8px; border-bottom: 1px solid var(--border-color); }
+  .lx-tabs__btn { background: none; border: 0; padding: 14px 28px; font: 600 1rem var(--font-family); color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: var(--transition); }
+  .lx-tabs__btn:hover { color: var(--text-primary); }
+  .lx-tabs__btn[aria-selected="true"] { color: var(--accent-btn); border-bottom-color: var(--accent-gold); }
+  .lx-tabs__panel { padding: 28px 4px; line-height: 1.9; color: var(--text-primary); }
+  .lx-tabs__panel[hidden] { display: none; }
+  .lx-tabs__panel img { max-width: 100%; height: auto; }
+  .lx-meta { display: grid; grid-template-columns: max-content 1fr; gap: 10px 28px; margin: 0; }
+  .lx-meta dt { color: var(--text-muted); }
+  .lx-meta dd { margin: 0; font-weight: 600; }
+  @media (max-width: 860px) { .lx-layout { grid-template-columns: 1fr; } .lx-tabs__btn { padding: 12px 16px; } }
+</style>
+
+<div class="lx-product">
+  <div class="container">
+    <nav class="lx-crumbs"><salla-breadcrumb></salla-breadcrumb></nav>
+  </div>
+
+  <div class="container section" id="product-{{ product.id }}">
+    <div class="lx-layout">
+
+      <div class="lx-gallery">
+        <salla-slider id="details-slider-{{ product.id }}" class="details-slider" type="thumbs" loop="false" auto-height listen-to-thumbnails-option show-thumbs-controls="false">
+          <div slot="items">
+            {% for image in product.images %}
+              <img class="swiper-slide" src="{{ image.url }}" alt="{{ image.alt|default(product.name) }}" {{ loop.first ? 'fetchpriority="high"' : 'loading="lazy"' }}>
+            {% else %}
+              <img class="swiper-slide" src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% endfor %}
+          </div>
+          {% if product.images|length > 1 %}
+            <div slot="thumbs">
+              {% for image in product.images %}
+                <div class="slide--one-fourth"><img src="{{ image.url }}" alt="{{ image.alt|default(product.name) }}" loading="lazy"></div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </salla-slider>
+      </div>
+
+      <div class="lx-info">
+        {% hook 'product:single.description.start' %}
+
+        <h1 class="lx-title">{{ product.name }}</h1>
+        {% if product.subtitle %}<p class="lx-subtitle">{{ product.subtitle }}</p>{% endif %}
+        <div class="lx-rule" aria-hidden="true"></div>
+
+        {% if product.rating %}
+          <salla-rating-stars value="{{ product.rating.stars }}" reviews="{{ product.rating.count }}"></salla-rating-stars>
+        {% endif %}
+
+        <div class="lx-price">
+          {% if product.is_on_sale %}
+            <span class="lx-price__now">{{ product.sale_price|money }}</span>
+            <del class="lx-price__old">{{ product.regular_price|money }}</del>
+          {% else %}
+            <span class="lx-price__now">{{ product.starting_price ? product.starting_price|money : product.price|money }}</span>
+          {% endif %}
+          {% if product.is_taxable %}<small class="lx-price__tax">{{ trans('pages.products.tax_included') }}</small>{% endif %}
+        </div>
+
+        {% hook 'product:single.description' %}
+
+        <form class="lx-form product-form" enctype="multipart/form-data" method="post"
+              onsubmit="return salla.form.onSubmit('cart.addItem', event)">
+          <input type="hidden" name="id" value="{{ product.id }}">
+
+          {% hook 'product:single.form.start' %}
+          {% include 'pages.partials.product.options' %}
+          {% hook 'product:single.form.end' %}
+
+          {% if product.is_hidden_quantity or product.type == 'booking' %}
+            <input type="hidden" value="1" name="quantity" aria-label="Quantity">
+          {% else %}
+            <div class="lx-qty">
+              <label>{{ trans('pages.products.quantity') }}</label>
+              <salla-quantity-input max="{{ product.max_quantity }}" value="1" name="quantity" aria-label="Quantity"></salla-quantity-input>
+            </div>
+          {% endif %}
+
+          <div class="lx-cta">
+            <salla-add-product-button
+              {{ product.is_require_shipping ? 'required-shipping' : '' }}
+              amount="{{ product.base_currency_price }}"
+              product-status="{{ product.status }}"
+              product-type="{{ product.type }}"
+              product-id="{{ product.id }}"
+              loader-position="end"
+              type="submit"
+              width="wide">
+              {{ product.add_to_cart_label }}
+            </salla-add-product-button>
+          </div>
+        </form>
+
+        {% hook 'product:single.description.end' %}
+      </div>
+    </div>
+
+    {# ---------- Tabs ---------- #}
+    <div class="lx-tabs" id="lx-tabs">
+      <div class="lx-tabs__nav" role="tablist">
+        <button class="lx-tabs__btn" role="tab" id="lx-tab-desc" aria-controls="lx-panel-desc" aria-selected="true" type="button">الوصف</button>
+        <button class="lx-tabs__btn" role="tab" id="lx-tab-info" aria-controls="lx-panel-info" aria-selected="false" type="button">معلومات المنتج</button>
+      </div>
+
+      <div class="lx-tabs__panel" role="tabpanel" id="lx-panel-desc" aria-labelledby="lx-tab-desc">
+        {{ product.description|raw }}
+      </div>
+
+      <div class="lx-tabs__panel" role="tabpanel" id="lx-panel-info" aria-labelledby="lx-tab-info" hidden>
+        <dl class="lx-meta">
+          {% if product.sku %}<dt>SKU</dt><dd>{{ product.sku }}</dd>{% endif %}
+          {% if product.brand.name %}<dt>العلامة</dt><dd>{{ product.brand.name }}</dd>{% endif %}
+          {% if product.weight %}<dt>الوزن</dt><dd>{{ product.weight }} {{ product.weight_type }}</dd>{% endif %}
+          {% if product.categories|length %}
+            <dt>الفئات</dt>
+            <dd>{% for cat in product.categories %}<a href="{{ cat.url }}">{{ cat.name }}</a>{{ loop.last ? '' : ' · ' }}{% endfor %}</dd>
+          {% endif %}
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <div class="container section">
+    <salla-products-slider source="related" source-value="{{ product.id }}" block-title="{{ trans('pages.products.similar_products') }}" display-all-url></salla-products-slider>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var root = document.getElementById('lx-tabs');
+    if (!root) return;
+    var tabs = root.querySelectorAll('[role="tab"]');
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        tabs.forEach(function (t) {
+          var on = t === tab;
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+          document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+        });
+      });
+    });
+  })();
+</script>
+{% endblock %}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="{{ language.code }}" dir="{{ language.direction }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ store.name }} | حيث تلتقي الفخامة بالأصالة</title>
+  <meta name="description" content="{{ store.description|default('عطور مستوحاة من أناقة العطور الفرنسية وهوية الروائح العربية الأصيلة.') }}">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- هنا نربط ملف الـ SCSS الخاص بك -->
+  <link rel="stylesheet" href="{{ 'app.css' | asset }}"> 
+  
+  {% hook 'head:start' %}
+  {% hook head %}
+  {% hook 'head:end' %}
+</head>
+<body>
+
+  <!-- التدرج الذهبي المشترك (SVG) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="gold-grad" gradientUnits="userSpaceOnUse" x1="3" y1="3" x2="21" y2="21">
+        <stop offset="0" stop-color="#F6E3A8"/><stop offset=".5" stop-color="#E6C77A"/><stop offset="1" stop-color="#C5A059"/>
+      </linearGradient>
+      <linearGradient id="gold-grad-deep" gradientUnits="userSpaceOnUse" x1="3" y1="3" x2="21" y2="21">
+        <stop offset="0" stop-color="#9A7326"/><stop offset=".5" stop-color="#7C5A18"/><stop offset="1" stop-color="#5E4210"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- 1. إدراج الهيدر -->
+  {% include 'components.header' %}
+
+  <!-- 2. محتوى الصفحة الرئيسية -->
+  <main id="home">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- 3. إدراج الفوتر -->
+  {% include 'components.footer' %}
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <!-- سلة توفر متغيرات JavaScript -->
+  <script>
+    window.salla = window.salla || {};
+    window.salla.cart = {
+      itemsCount: {{ cart.items_count }},
+      items: {{ cart.items|json_encode|raw }}
+    };
+    window.salla.store = {
+      name: "{{ store.name|escape('js') }}",
+      currency: "{{ store.currency.symbol|escape('js') }}"
+    };
+  </script>
+  <!-- ربط ملف الجافاسكريبت الخاص بك -->
+  <script src="{{ 'app.js' | asset }}"></script>
+  {% hook 'body:end' %}
+</body>
+</html>

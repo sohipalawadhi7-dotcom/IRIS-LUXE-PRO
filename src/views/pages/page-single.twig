@@ -1,0 +1,32 @@
+{#
+  pages/page-single.twig — static content pages (About us, Privacy policy, ...).
+  Salla supplies `page.title` and `page.content`. New classes are prefixed `lx-` and scoped below.
+#}
+{% extends "layouts.master" %}
+
+{% block content %}
+<style>
+  .lx-page { font-family: var(--font-family); color: var(--text-primary); }
+  .lx-crumbs { padding-block: 18px 0; font-size: .85rem; color: var(--text-muted); }
+  .lx-page__card { max-width: 860px; margin: 0 auto; padding: clamp(24px, 4vw, 48px); background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius); box-shadow: var(--shadow); }
+  .lx-page__content { line-height: 2; font-size: 1.02rem; }
+  .lx-page__content h2, .lx-page__content h3, .lx-page__content h4 { font-family: var(--font-display); margin: 1.6em 0 .5em; }
+  .lx-page__content a { color: var(--accent-btn); text-decoration: underline; text-underline-offset: 3px; }
+  .lx-page__content img { max-width: 100%; height: auto; border-radius: var(--radius); }
+  .lx-page__content table { width: 100%; border-collapse: collapse; }
+  .lx-page__content th, .lx-page__content td { padding: 10px 12px; border: 1px solid var(--border-color); }
+</style>
+
+<div class="lx-page">
+  <div class="container section">
+    <nav class="lx-crumbs"><salla-breadcrumb></salla-breadcrumb></nav>
+    <h1 class="section-title">{{ page.title|raw }}</h1>
+
+    <article class="lx-page__card">
+      <div class="lx-page__content">
+        {{ page.content|raw }}
+      </div>
+    </article>
+  </div>
+</div>
+{% endblock %}

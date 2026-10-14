@@ -1,0 +1,1038 @@
+/* ==========================================
+   DOKHOON IRIS - Main Stylesheet (RTL)
+   ========================================== */
+
+/* 1. Reset & Global Variables */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap');
+
+/* Typography — Laverne-style luxury hierarchy, three families with one job each:
+   IBM Plex Sans Arabic  every Arabic run: 400 body / subtitles, 500 navigation + buttons, 700 headings
+   Cinzel                English titles and the DOKHOON IRIS wordmark: roman-capital serif, 3px tracking, uppercase
+   Montserrat            English UI text, numerals, prices, captions
+   Each stack lists the Latin face first and IBM Plex Sans Arabic right after it: Cinzel / Montserrat contain no Arabic
+   glyphs, so Arabic letters fall through to Plex automatically while Latin letters keep their own face.
+   Letter-spacing is applied only to Latin runs (wordmark, product names); the one Arabic exception is the hero title's
+   -0.5px, which tightens (never gaps) the joined letterforms.
+   The 'Tajawal Local' @font-face blocks below are legacy offline copies and are no longer referenced. */
+@font-face { font-family: 'Tajawal Local'; font-weight: 300; font-style: normal; font-display: swap;
+  src: local('Tajawal Light'), local('Tajawal-Light'), url('fonts/Tajawal-Light.woff2') format('woff2'), url('fonts/Tajawal-Light.ttf') format('truetype'); }
+@font-face { font-family: 'Tajawal Local'; font-weight: 400; font-style: normal; font-display: swap;
+  src: local('Tajawal Regular'), local('Tajawal-Regular'), url('fonts/Tajawal-Regular.woff2') format('woff2'), url('fonts/Tajawal-Regular.ttf') format('truetype'); }
+@font-face { font-family: 'Tajawal Local'; font-weight: 700; font-style: normal; font-display: swap;
+  src: local('Tajawal Bold'), local('Tajawal-Bold'), url('fonts/Tajawal-Bold.woff2') format('woff2'), url('fonts/Tajawal-Bold.ttf') format('truetype'); }
+
+:root {
+  --bg-primary: #F9F6F0;       /* خلفية كريمية فاتحة */
+  --bg-soft: #F4EFEA;          /* خلفية ثانوية */
+  --bg-card: #F1EBE2;          /* خلفية البطاقات */
+  --bg-media: #EDE5DA;         /* خلفية الصور */
+  --text-primary: #3A2E2B;     /* بني داكن للنصوص الرئيسية */
+  --text-muted: #6F6058;       /* بني فاتح للنصوص الفرعية (تباين أعلى) */
+  --accent-gold: #C5A059;      /* ذهبي للمسات الفاخرة */
+  --accent-dark-gold: #A8823F;
+  --accent-btn: #8F6B2A;       /* ذهبي أغمق للأزرار: يعطي تباين مقروء مع النص الأبيض */
+  --border-color: #E6DFD5;     /* حدود ناعمة */
+  --footer-bg: #35291f;
+  /* Header: same dark brown as the footer (#35291f). Solid colour, no gradient. */
+  --header-bg: #35291f;
+  --header-bg-deep: #35291f;   /* mobile drop-down uses the same dark brown */
+  --header-ink: #E9DFD0;       /* nav / icons — same light cream as footer text */
+  --header-ink-strong: #FFFFFF;/* active link */
+  --header-gold: #C5A059;      /* hover — same gold as footer links */
+  --header-gold-line: #C5A059; /* underline (graphic element, not text) */
+  /* Logo rendering filters. Default (dark footer): as-is. The header overrides them with a deeper bronze,
+     because the raw champagne gold is only ~1.4:1 against #D2C4A8. */
+  --lf: saturate(1.2) contrast(1.1);
+  --lg: rgba(255, 214, 120, .95);
+  --shine-filter: brightness(2.1) saturate(.55) contrast(1.05);
+  /* Font stacks */
+  --font-ar: 'IBM Plex Sans Arabic', sans-serif;                                              /* global Arabic */
+  --font-family: 'Montserrat', 'IBM Plex Sans Arabic', sans-serif;                            /* body / interface: Latin = Montserrat, Arabic = Plex */
+  --font-display: 'Cinzel', 'IBM Plex Sans Arabic', serif;                                    /* English titles + wordmark; Arabic headings fall to Plex */
+  --font-latin-ui: 'Montserrat', 'IBM Plex Sans Arabic', sans-serif;                          /* Latin captions, numerals, prices */
+  --font-en-title: 'Cinzel', 'IBM Plex Sans Arabic', serif;                                   /* Latin product names */
+  /* Weights (IBM Plex Sans Arabic tops out at 700) */
+  --fw-light: 300; --fw-regular: 400; --fw-medium: 500; --fw-semibold: 600; --fw-bold: 700; --fw-xbold: 700;
+  /* Tracking (Latin only) */
+  --track-wordmark: 3px;       /* DOKHOON IRIS + English titles */
+  --track-latin-title: 3px;    /* product names */
+  --word-gap-heading: .06em;   /* Arabic headings: a touch of word spacing instead of letter spacing */
+  /* Line-heights */
+  --lh-heading: 1.3; --lh-sub: 1.8; --lh-body: 1.85; --lh-ui: 1.5;
+  --sale: #D81B60;             /* accent for current prices + sale badge (deep pink) */
+  --radius: 14px;
+  --shadow: 0 6px 18px rgba(74, 59, 50, .08);
+  --shadow-lift: 0 16px 32px rgba(74, 59, 50, .15), 0 4px 16px rgba(197, 160, 89, .18);   /* soft grey + gold ambient */
+  --lift-y: -8px;              /* shared hover lift: product, category and gift cards */
+  --transition: all 0.3s ease;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  direction: rtl;
+  text-align: right;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { text-decoration: none; color: inherit; transition: var(--transition); }
+ul { list-style: none; }
+img, svg { max-width: 100%; display: block; }
+img { height: auto; }
+button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; }
+:focus-visible { outline: 2px solid var(--accent-dark-gold); outline-offset: 3px; border-radius: 4px; }
+
+.container { width: 90%; max-width: 1200px; margin: 0 auto; }
+
+/* 2. Top Bar */
+.top-bar {
+  background-color: #F1ECE3;
+  color: var(--text-primary);
+  text-align: center;
+  padding: 8px 15px;
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.top-bar svg { width: 22px; height: 22px; stroke: var(--text-primary); }
+
+/* 3. Header & Navigation */
+.main-header {
+  background: #35291f;                      /* same as footer */
+  background-color: var(--header-bg);
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(143, 107, 42, .35);
+  box-shadow: 0 4px 18px rgba(53, 41, 31, .14);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+.header-container { display: flex; align-items: center; justify-content: space-between; gap: 24px; position: relative; }
+
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo svg { width: 44px; height: 44px; }
+
+/* Header logo (.brand-logo) — first item of the flex row = top-right in RTL */
+.main-header .logo { flex: none; padding: 2px 4px; gap: 12px; }
+.main-header .logo .logo-text { white-space: nowrap; line-height: 1; transition: color .3s ease, text-shadow .3s ease; }
+.main-header .logo:is(:hover, :focus-visible) .logo-text { color: var(--accent-gold); text-shadow: none; }
+.logo-mark {
+  position: relative;
+  display: block;
+  height: 68px;
+  aspect-ratio: 360 / 446;          /* matches long.png */
+  transform-origin: 50% 60%;
+  transition: transform .45s cubic-bezier(.34, 1.56, .64, 1), filter .45s ease;
+}
+.logo-mark .brand-logo, .logo-mark .brand-logo-shine { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: contain; }
+/* Always fully opaque. The logo has pale champagne highlights that blend into the cream header,
+   so a touch of saturation/contrast keeps every line crisp. */
+.brand-logo {
+  opacity: 1;
+  filter: var(--lf);   /* no blur / halo: only richer, crisper colour */
+  image-rendering: auto;
+}
+/* Bright copy of the logo; a moving gradient mask reveals it only on the golden lines */
+.brand-logo-shine {
+  pointer-events: none;
+  opacity: 0;
+  filter: var(--shine-filter);
+  -webkit-mask-image: linear-gradient(110deg, transparent 38%, #000 50%, transparent 62%);
+          mask-image: linear-gradient(110deg, transparent 38%, #000 50%, transparent 62%);
+  -webkit-mask-size: 320% 100%;
+          mask-size: 320% 100%;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-position: 130% 0;
+          mask-position: 130% 0;
+}
+/* ==========================================================
+   Royal Assembly Motion — header AND footer logo (.logo > .logo-mark)
+   At rest : the single crisp logo image is shown (permanent, 100% opaque).
+   On hover: the same image is re-assembled from three masked layers
+     1. ring    — a swirl traces the outer circle (conic reveal)
+     2. letters — "D" + vertical "IRIS" emerge as solid gold
+     3. flower  — stem rises and the iris blooms with a golden glow
+     4. the full logo settles, then a golden shimmer sweeps across it + ambient glow
+   Layers are the SAME image clipped by region masks (set by script.js as --m-ring / --m-letters / --m-flower),
+   so the final frame is pixel-identical to the original. Without animation (reduced motion) the base stays visible.
+   ========================================================== */
+@property --ra { syntax: '<angle>';      inherits: false; initial-value: 0deg; }
+@property --lp { syntax: '<percentage>'; inherits: false; initial-value: -8%; }
+@property --fp { syntax: '<percentage>'; inherits: false; initial-value: -8%; }
+
+.brand-logo-layer {
+  position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: contain;
+  pointer-events: none;
+  opacity: 0;                                   /* only visible during the hover assembly */
+  filter: var(--lf);
+  -webkit-mask-size: 100% 100%, 100% 100%;           mask-size: 100% 100%, 100% 100%;
+  -webkit-mask-repeat: no-repeat, no-repeat;         mask-repeat: no-repeat, no-repeat;
+  -webkit-mask-composite: source-in;                 mask-composite: intersect;   /* region ∩ reveal */
+}
+.brand-logo-layer.layer-ring {
+  -webkit-mask-image: var(--m-ring), conic-gradient(from 270deg at 50% 58.4%, #000 var(--ra), transparent calc(var(--ra) + .6deg));
+          mask-image: var(--m-ring), conic-gradient(from 270deg at 50% 58.4%, #000 var(--ra), transparent calc(var(--ra) + .6deg));
+}
+.brand-logo-layer.layer-letters {
+  -webkit-mask-image: var(--m-letters), linear-gradient(90deg, #000 var(--lp), transparent calc(var(--lp) + 9%));
+          mask-image: var(--m-letters), linear-gradient(90deg, #000 var(--lp), transparent calc(var(--lp) + 9%));
+}
+.brand-logo-layer.layer-flower {
+  -webkit-mask-image: var(--m-flower), linear-gradient(0deg, #000 var(--fp), transparent calc(var(--fp) + 8%));
+          mask-image: var(--m-flower), linear-gradient(0deg, #000 var(--fp), transparent calc(var(--fp) + 8%));
+}
+
+.logo:is(:hover, :focus-visible) .logo-mark {
+  transform: scale(1.04);
+  filter: drop-shadow(0 0 7px rgba(197, 160, 89, .55)) drop-shadow(0 2px 14px rgba(197, 160, 89, .35));
+}
+/* the base disappears at t=0 and comes back once the assembly is complete */
+.logo:is(:hover, :focus-visible) .brand-logo { animation: ra-base 1.9s linear both; }
+
+.logo:is(:hover, :focus-visible) .layer-ring {
+  animation: ra-ring .6s cubic-bezier(.45, 0, .2, 1) 0s both, ra-ring-glow 1.25s ease-out 0s both, ra-layer-out .01s linear 1.25s forwards;
+}
+.logo:is(:hover, :focus-visible) .layer-letters {
+  animation: ra-letters .55s cubic-bezier(.3, .7, .2, 1) .3s both, ra-letters-in .55s ease-out .3s both, ra-layer-out .01s linear 1.25s forwards;
+}
+.logo:is(:hover, :focus-visible) .layer-flower {
+  animation: ra-flower .7s cubic-bezier(.3, .6, .2, 1) .55s both, ra-flower-glow .95s ease-out .55s both, ra-layer-out .01s linear 1.25s forwards;
+}
+.logo:is(:hover, :focus-visible) .brand-logo-shine {
+  opacity: 1;
+  animation: logo-shimmer .6s cubic-bezier(.4, 0, .2, 1) 1.3s both;
+}
+
+@keyframes ra-base      { 0%, 52% { opacity: 0; } 62%, 100% { opacity: 1; } }       /* 1.0s → 1.2s fade-in under the layers */
+@keyframes ra-layer-out { to { opacity: 0; } }
+@keyframes ra-ring      { from { --ra: 0deg; } to { --ra: 361deg; } }
+@keyframes ra-ring-glow {
+  0%   { opacity: 1; filter: var(--lf) brightness(1.5) drop-shadow(0 0 5px var(--lg)); }
+  60%  { opacity: 1; filter: var(--lf) brightness(1.15) drop-shadow(0 0 3px var(--lg)); }
+  100% { opacity: 1; filter: var(--lf); }
+}
+@keyframes ra-letters   { from { --lp: -8%; } to { --lp: 100%; } }
+@keyframes ra-letters-in {
+  0%   { opacity: 0; transform: translateY(5%) scale(.97); filter: var(--lf) brightness(1.4); }
+  100% { opacity: 1; transform: none;                      filter: var(--lf); }
+}
+@keyframes ra-flower    { from { --fp: -8%; } to { --fp: 100%; } }
+@keyframes ra-flower-glow {
+  0%   { opacity: 1; filter: var(--lf) brightness(1.55) drop-shadow(0 0 6px var(--lg)) drop-shadow(0 0 12px var(--lg)); }
+  70%  { opacity: 1; filter: var(--lf) brightness(1.15) drop-shadow(0 0 4px var(--lg)); }
+  100% { opacity: 1; filter: var(--lf); }
+}
+@keyframes logo-shimmer {
+  from { -webkit-mask-position: 130% 0; mask-position: 130% 0; }
+  to   { -webkit-mask-position: -30% 0; mask-position: -30% 0; }
+}
+.logo-text {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  letter-spacing: var(--track-wordmark);
+  color: var(--accent-dark-gold);
+  direction: ltr;
+}
+
+.nav-menu ul { display: flex; gap: 32px; }
+.nav-menu a {
+  position: relative;
+  display: inline-block;
+  font-weight: 500;
+  color: var(--text-primary);
+  padding: 6px 2px;
+  border-bottom: 2px solid transparent;
+}
+/* Golden underline: grows from the centre of whichever link is .active */
+.nav-menu a::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -2px;
+  height: 2px;
+  background: linear-gradient(90deg, #E6C77A, var(--accent-gold), var(--accent-dark-gold));
+  border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform .35s cubic-bezier(.4, 0, .2, 1);
+}
+.nav-menu a:hover { color: var(--accent-gold); }
+.nav-menu a.active { color: var(--text-primary); }
+.nav-menu a.active::after { transform: scaleX(1); }
+.nav-menu a:not(.active):hover::after { transform: scaleX(.35); }
+
+/* Anchor targets stop below the sticky header */
+main#home, main > section[id], footer[id] { scroll-margin-top: 96px; }
+
+.header-icons { display: flex; gap: 6px; align-items: center; }
+.icon-btn {
+  position: relative;
+  width: 42px; height: 42px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  color: var(--text-primary);
+  transition: var(--transition);
+}
+.icon-btn:hover { background: var(--bg-soft); }
+.icon-btn svg { width: 22px; height: 22px; stroke: currentColor; transition: transform .3s cubic-bezier(.34, 1.56, .64, 1), filter .3s ease; }
+
+/* Search / account / cart: stroke turns into the gold-bronze gradient + soft scale and glow */
+.icon-btn:not(.menu-toggle):hover,
+.icon-btn:not(.menu-toggle):focus-visible { color: var(--accent-dark-gold); }
+.icon-btn:not(.menu-toggle):is(:hover, :focus-visible) svg {
+  stroke: url(#gold-grad) var(--accent-gold);   /* solid gold if the gradient is unavailable */
+  transform: scale(1.14);
+  filter: drop-shadow(0 0 5px rgba(197, 160, 89, .55));
+  animation: hdr-icon-in .3s ease-out;
+}
+@keyframes hdr-icon-in { from { opacity: .45; } to { opacity: 1; } }
+.menu-toggle { display: none; }
+
+.cart-count {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  background-color: var(--accent-dark-gold);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  min-width: 18px; height: 18px;
+  padding: 0 5px;
+  border-radius: 99px;
+  display: flex; align-items: center; justify-content: center;
+  transform: scale(0);
+  transition: transform .25s cubic-bezier(.3, 1.6, .6, 1);
+}
+.cart-count.has-items { transform: scale(1); }
+.cart-count.bump { animation: bump .35s; }
+@keyframes bump { 50% { transform: scale(1.4); } }
+
+/* 4. Hero Section */
+.hero-section {
+  position: relative;
+  background: radial-gradient(circle at 25% 40%, #FCFAF7 0%, #EFE8DC 55%, #E4D6C3 100%);
+  overflow: hidden;
+}
+.hero-track { position: relative; min-height: 440px; }
+.hero-slide {
+  position: absolute; inset: 0;
+  display: grid; grid-template-columns: 1.15fr 1fr; align-items: center; gap: 24px;
+  opacity: 0; visibility: hidden;
+  transition: opacity .5s ease, visibility .5s;
+}
+.hero-slide.is-active { opacity: 1; visibility: visible; position: relative; }
+
+.hero-art { height: 100%; min-height: 340px; display: flex; align-items: flex-end; justify-content: center; padding-top: 24px; }
+.hero-art img { height: 100%; max-height: 420px; width: auto; }
+
+.hero-copy { text-align: center; padding: 30px 10px; max-width: 460px; justify-self: center; }
+.hero-copy .hero-logo { width: 100px; height: 100px; margin: 0 auto 6px; }
+/* Hero logo image: full opacity, natural proportions, same crispness filter as the header */
+.hero-copy .hero-logo-img {
+  width: auto; height: 124px; max-width: none;
+  aspect-ratio: 640 / 793;
+  margin: 0 auto 8px;
+  opacity: 1;
+  filter: saturate(1.2) contrast(1.1);
+}
+.hero-brand { font-family: var(--font-display); font-size: 2.1rem; letter-spacing: .12em; color: var(--accent-dark-gold); direction: ltr; line-height: 1.2; }
+.hero-title { font-family: var(--font-display); font-size: 1.75rem; color: var(--accent-dark-gold); font-weight: 400; margin: 6px 0 12px; }
+.hero-text { font-weight: 500; margin-bottom: 22px; }
+
+.btn {
+  display: inline-block;
+  background: var(--accent-dark-gold);
+  color: #fff;
+  padding: 11px 30px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: .95rem;
+}
+.btn:hover { background: var(--text-primary); transform: translateY(-1px); }
+.btn-sm { padding: 6px 22px; font-size: .85rem; }
+
+.hero-dots { position: absolute; bottom: 14px; left: 0; right: 0; display: flex; justify-content: center; gap: 8px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid var(--accent-dark-gold); background: #fff; padding: 0; transition: var(--transition); }
+.dot[aria-selected="true"] { background: var(--accent-dark-gold); transform: scale(1.15); }
+
+/* Hero slider arrows */
+.hero-arrow {
+  position: absolute; top: 50%; z-index: 3;
+  width: 46px; height: 46px; margin-top: -23px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: rgba(249, 246, 240, .82);
+  border: 1px solid rgba(197, 160, 89, .55);
+  color: var(--accent-dark-gold);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 14px rgba(74, 59, 50, .12);
+  transition: background .3s ease, color .3s ease, border-color .3s ease, transform .3s cubic-bezier(.34, 1.56, .64, 1), box-shadow .3s ease;
+}
+.hero-arrow svg { width: 22px; height: 22px; stroke: currentColor; }
+.hero-next { left: 18px; }     /* physical left: "<" */
+.hero-prev { right: 18px; }    /* physical right: ">" */
+.hero-arrow:hover, .hero-arrow:focus-visible {
+  background: var(--accent-btn);
+  border-color: var(--accent-btn);
+  color: #fff;
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(197, 160, 89, .45);
+}
+.hero-arrow:active { transform: scale(.96); }
+
+/* 5. Features */
+.features-section { padding: 34px 0 22px; }
+.features-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+.feature { text-align: center; padding: 6px 18px; border-right: 1px solid var(--border-color); }
+.feature:first-child { border-right: 0; }
+.feature svg { width: 38px; height: 38px; margin: 0 auto 8px; stroke: var(--accent-dark-gold); }
+.feature h3 { font-size: .95rem; font-weight: 700; }
+.feature p { font-size: .8rem; color: var(--text-muted); }
+
+/* 6. Section titles & grids */
+.section { padding: 26px 0; }
+.section-title {
+  display: flex; align-items: center; justify-content: center; gap: 14px;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+.section-title::before, .section-title::after { content: ""; width: 54px; height: 1px; background: var(--accent-gold); }
+.section-subtitle { text-align: center; font-size: .88rem; color: var(--text-muted); margin: -14px 0 20px; }
+
+.grid { display: grid; gap: 16px; }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-5 { grid-template-columns: repeat(5, 1fr); gap: 14px; }
+
+/* 7. Cards (categories / products / gifts) */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: var(--transition);
+}
+.card:hover { transform: translateY(var(--lift-y)); box-shadow: var(--shadow-lift); }
+.card-img { width: 100%; object-fit: cover; background: var(--bg-media); }
+
+.category-card { display: block; }
+.category-card .card-img { aspect-ratio: 1 / .82; }
+.category-card .card-body {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 11px 8px;
+}
+.category-card .card-body svg { width: 24px; height: 24px; stroke: var(--accent-dark-gold); flex: none; }
+.category-card .product-title { font-size: .95rem; }
+.category-card .product-desc { display: block; line-height: 1.2; letter-spacing: .06em; direction: ltr; }
+
+.product-card { display: flex; flex-direction: column; }
+.product-card .card-img { aspect-ratio: 1 / .92; }
+.product-info { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.product-title { font-size: 1rem; font-weight: 700; }
+.product-card .product-title { direction: ltr; text-align: right; letter-spacing: .04em; }
+.product-desc { font-size: .8rem; color: var(--text-muted); }
+.product-card .product-desc { direction: ltr; text-align: right; }
+.product-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+.price { font-weight: 700; font-size: 1.05rem; }
+.price small { font-size: .75rem; font-weight: 500; margin-right: 3px; }
+.add-cart-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--accent-dark-gold);
+  display: grid; place-items: center;
+  transition: var(--transition);
+}
+.add-cart-btn:hover { background: var(--text-primary); transform: scale(1.08); }
+.add-cart-btn svg { width: 18px; height: 18px; stroke: #fff; }
+
+/* 8. Gift sets */
+.gifts-box { border: 1px solid var(--border-color); border-radius: var(--radius); padding: 24px 22px 26px; }
+.gift-card { text-align: center; background: none; box-shadow: none; border-radius: 8px; display: block; }
+.gift-card { overflow: visible; }   /* lets the lifted image shadow show */
+.gift-card:hover { transform: translateY(var(--lift-y)); box-shadow: none; }
+.gift-card .card-img { aspect-ratio: 1 / .6; border-radius: 8px; transition: var(--transition); }
+.gift-card:hover .card-img { box-shadow: var(--shadow-lift); }
+.gift-card .product-title { font-size: .95rem; margin-top: 10px; }
+
+/* 9. Brand story */
+.story-section { margin-top: 30px; background: linear-gradient(100deg, #F1E9DE, #E4D6C3); }
+.story-grid { display: grid; grid-template-columns: 1.3fr 1fr; align-items: center; gap: 30px; min-height: 300px; }
+.story-art { align-self: end; display: flex; justify-content: center; }
+.story-art img { max-height: 300px; width: auto; }
+.story-copy { max-width: 380px; padding: 26px 0; justify-self: center; text-align: center; }
+.story-copy h2 { font-family: var(--font-display); font-size: 1.4rem; }
+.story-copy .name { display: block; font-family: var(--font-display); font-size: 1.9rem; letter-spacing: .1em; color: var(--accent-dark-gold); direction: ltr; margin-bottom: 6px; }
+.story-copy p { font-size: .92rem; margin-bottom: 16px; }
+
+/* 10. Policies */
+.policies-section { background: var(--bg-soft); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
+.policies-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+.policy { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 16px 12px; border-right: 1px solid var(--border-color); }
+.policy:first-child { border-right: 0; }
+.policy svg { width: 30px; height: 30px; stroke: var(--accent-dark-gold); flex: none; }
+.policy h4 { font-size: .85rem; font-weight: 700; }
+.policy p { font-size: .75rem; color: var(--text-muted); line-height: 1.4; }
+
+/* 11. Footer */
+.main-footer { background: var(--footer-bg); color: #E9DFD0; padding-top: 34px; }
+.main-footer .logo-text { color: var(--accent-gold); }
+.footer-tag { margin: 0; font-family: var(--font-display); color: var(--accent-gold); font-size: 1.1rem; }
+.main-footer h4 { color: var(--accent-gold); font-size: .95rem; margin-bottom: 10px; }
+.main-footer li { margin-bottom: 4px; }
+.main-footer li a { font-size: .85rem; opacity: .85; }
+.main-footer li a:hover { opacity: 1; color: var(--accent-gold); }
+.socials { display: flex; gap: 10px; }
+.socials a { width: 34px; height: 34px; border: 1px solid rgba(197, 160, 89, .5); border-radius: 50%; display: grid; place-items: center; }
+.socials a:hover { background: rgba(197, 160, 89, .2); }
+.socials svg { width: 17px; height: 17px; fill: var(--accent-gold); }
+.copyright { border-top: 1px solid rgba(255, 255, 255, .1); text-align: center; font-size: .8rem; padding: 14px 0; opacity: .75; }
+
+/* ---- Footer: brand block (logo | name + tagline + socials) over a tidy row of link columns ---- */
+.footer-grid {
+  display: flex; flex-direction: row;          /* RTL: first child (brand) = RIGHT, second (links) = LEFT */
+  align-items: center; justify-content: space-between;
+  gap: clamp(28px, 4vw, 64px);
+  padding-bottom: 32px;
+}
+
+/* Brand block, RTL order from the RIGHT:  [circular logo] -> [3-line text stack] -> gap -> [link columns on the LEFT].
+   No direction override: in this RTL page the first grid column (logo) is the far right, the stack sits to its left.
+   The stack is one "invisible justified box": its width = the tagline's width, and
+     line 1  DOKHOON IRIS  — size + letter-spacing fitted to that exact width (script.js: fitFooterBrand)
+     line 2  tagline       — sets the width
+     line 3  social icons  — width:100% + space-between, so the outer icons touch both edges.
+   .logo uses display:contents so its two children (mark + name) become grid items, while hovering either
+   one still triggers the Royal Assembly animation. */
+.footer-brand {
+  display: grid;
+  grid-template-columns: auto max-content;      /* col 1 = logo (far right), col 2 = text stack to its left */
+  grid-template-rows: auto auto auto;
+  column-gap: 28px;
+  row-gap: 12px;
+  align-items: center;                          /* logo + stack centred on the same vertical axis */
+  justify-content: start;
+  flex: none;
+}
+.main-footer .footer-brand .logo { display: contents; }
+.main-footer .footer-brand .logo-mark {
+  grid-column: 1; grid-row: 1 / span 3; align-self: center;
+  height: 160px;                                /* ≈ height of title + tagline + icons */
+}
+.main-footer .footer-brand .logo-text {
+  grid-column: 2; grid-row: 1; align-self: end;
+  width: 0; min-width: 100%;                    /* contributes NOTHING to the column width: the tagline decides it */
+  direction: ltr; text-align: left; white-space: nowrap; overflow: visible;
+  font-size: clamp(1.4rem, .9rem + 1.5vw, 2rem); letter-spacing: .1em; line-height: 1.1;   /* starting values; fitted exactly by script.js */
+  color: var(--accent-gold);
+}
+.footer-brand .footer-tag {
+  grid-column: 2; grid-row: 2; margin: 0;
+  direction: rtl; text-align: center; white-space: nowrap;
+  font-size: clamp(1.25rem, 1.1rem + .5vw, 1.5rem); line-height: 1.6;
+}
+.footer-brand .socials {
+  grid-column: 2; grid-row: 3; align-self: start;
+  display: flex; flex-wrap: nowrap; justify-content: space-between;   /* outer icons align with the title + tagline edges */
+  direction: ltr;                                                      /* keeps Instagram → WhatsApp left-to-right */
+  width: 100%; gap: 8px; margin-top: 2px;
+}
+.footer-brand .socials a { width: 42px; height: 42px; flex: none; }
+.footer-brand .socials svg { width: 20px; height: 20px; }
+.main-footer .logo:is(:hover, :focus-visible) .logo-text { color: #F3DFAE; text-shadow: 0 0 12px rgba(197, 160, 89, .45); }
+
+.footer-links {
+  display: grid; grid-template-columns: repeat(3, auto);   /* sits on the LEFT side of the row */
+  gap: clamp(28px, 4vw, 56px);
+  align-items: start;
+  margin-inline-start: auto;
+}
+/* narrow screens: stack brand over links, centred divider between */
+@media (max-width: 1000px) {
+  .footer-grid { flex-direction: column; align-items: stretch; gap: 30px; }
+  .footer-brand { padding-bottom: 28px; border-bottom: 1px solid rgba(197, 160, 89, .22); }
+  .footer-links { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-inline-start: 0; }
+}
+
+.main-footer .brand-logo { filter: var(--lf); }   /* crisp, no halo at rest */
+@media (max-width: 1000px) { .footer-brand { margin-inline: auto; } }
+@media (max-width: 560px) {
+  .footer-brand { column-gap: 16px; row-gap: 8px; }
+  .main-footer .footer-brand .logo-mark { height: 112px; }
+  .main-footer .footer-brand .logo-text { font-size: 1.15rem; letter-spacing: .08em; }
+  .footer-brand .footer-tag { font-size: 1.125rem; }
+  .footer-brand .socials a { width: 34px; height: 34px; }
+  .footer-brand .socials svg { width: 16px; height: 16px; }
+}
+
+/* Hero slider hidden when the merchant has no slides */
+.hero-section[hidden], .hero-arrow[hidden], .hero-dots[hidden] { display: none; }
+
+/* 12. Toast */
+.toast {
+  position: fixed; bottom: 22px; left: 50%;
+  transform: translate(-50%, 30px);
+  background: var(--text-primary); color: #fff;
+  padding: 11px 22px; border-radius: 99px; font-size: .9rem;
+  opacity: 0; pointer-events: none; transition: var(--transition); z-index: 2000;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* 13. Typography system — IBM Plex Sans Arabic (Arabic) + Cinzel (English titles / wordmark) + Montserrat (English UI)
+   Hero title   Plex 700 · -0.5px · line-height 1.3
+   Hero text    Plex 400 · opacity .85
+   Nav, buttons Plex 500 · 14px
+   Wordmark     Cinzel 700 · 3px · uppercase
+   Arabic: no positive letter-spacing (it opens gaps in joined letters). Never justify. */
+::selection { background: rgba(197, 160, 89, .28); color: var(--text-primary); }
+
+body {
+  font-family: var(--font-family);
+  font-weight: var(--fw-regular);
+  font-size: clamp(1rem, .95rem + .2vw, 1.0625rem);
+  line-height: var(--lh-body);
+  letter-spacing: 0;
+  font-kerning: normal;
+  font-synthesis: none;
+  font-variant-numeric: lining-nums;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+}
+button, input, select, textarea { font-family: inherit; font-weight: var(--fw-regular); }
+strong, b { font-weight: var(--fw-bold); }
+
+/* Headings: Playfair for Latin, Tajawal 700/800 for Arabic */
+h1, h2, h3, h4, .section-title, .hero-title, .logo-text, .hero-brand, .story-copy .name {
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+}
+h1, h2, .section-title, .hero-title, .story-copy h2 { font-weight: var(--fw-xbold); word-spacing: var(--word-gap-heading); line-height: var(--lh-heading); }
+h1, h2, h3, h4, .section-title, .hero-title { text-wrap: balance; }
+p, .hero-text, .section-subtitle { text-wrap: pretty; }
+
+/* Wordmark / store title: bold serif, wide luxurious tracking (Latin) */
+.logo-text, .hero-brand, .story-copy .name {
+  font-family: 'Cinzel', serif;
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--track-wordmark);   /* 3px */
+  text-transform: uppercase;
+  word-spacing: 0;
+}
+
+/* Top bar & navigation: clean, modern, comfortable */
+.top-bar { font-size: .875rem; line-height: var(--lh-ui); font-weight: var(--fw-medium); }
+.nav-menu a { font-family: var(--font-family); font-size: 14px; line-height: var(--lh-ui); font-weight: var(--fw-medium); letter-spacing: 0; }
+
+/* Hero */
+.hero-copy { max-width: 520px; }
+.hero-title {
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  font-size: clamp(2rem, 1.5rem + 2.4vw, 3.25rem);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.3;
+  word-spacing: 0;
+  margin: 8px 0 14px;
+}
+.hero-text { font-size: clamp(1.0625rem, 1rem + .35vw, 1.25rem); line-height: 1.9; font-weight: 400; color: var(--text-primary); opacity: .85; margin-bottom: 26px; max-width: 34em; margin-inline: auto; }
+
+/* Buttons / CTA: distinct premium weight, proportional padding */
+.btn { font-family: var(--font-family); font-size: 14px; font-weight: var(--fw-medium); line-height: 1.4; letter-spacing: 0; padding: 14px 40px; min-height: 48px; border-radius: 4px; background: var(--accent-btn); }
+.btn:hover { background: var(--text-primary); }
+.btn-sm { font-size: 14px; padding: 10px 30px; min-height: 44px; }
+.cart-count { background-color: var(--accent-btn); font-size: .8125rem; font-weight: var(--fw-bold); line-height: 1; }
+
+/* Sections: titles prominent, taglines medium weight */
+.section { padding: clamp(40px, 5vw, 64px) 0; }
+.section-title { font-size: clamp(1.625rem, 1.35rem + 1.2vw, 2.25rem); margin-bottom: 32px; }
+.section-title::before, .section-title::after { width: 64px; }
+.section-subtitle { font-size: 1.0625rem; line-height: var(--lh-sub); font-weight: var(--fw-medium); margin: -16px 0 28px; }
+
+/* Features, policies */
+.feature h3 { font-size: 1.0625rem; line-height: var(--lh-ui); }
+.feature p, .policy p { font-size: .875rem; line-height: 1.7; font-weight: var(--fw-regular); }
+.policy h4 { font-size: 1rem; line-height: var(--lh-ui); font-weight: var(--fw-bold); }
+
+/* Category + gift titles */
+.category-card .product-title { font-size: 1.125rem; line-height: var(--lh-ui); font-weight: var(--fw-bold); }
+.category-card .product-desc { font-size: .8125rem; letter-spacing: .14em; font-weight: var(--fw-regular); font-family: var(--font-latin-ui); }
+.gift-card .product-title { font-size: 1.0625rem; line-height: var(--lh-ui); font-weight: var(--fw-bold); margin-top: 12px; }
+
+/* Brand story */
+.story-copy { max-width: 460px; }
+.story-copy h2 { font-size: clamp(1.5rem, 1.25rem + .8vw, 1.875rem); }
+.story-copy p { font-size: clamp(1.0625rem, 1rem + .3vw, 1.125rem); line-height: 1.95; font-weight: var(--fw-regular); }
+
+/* Footer: tagline = medium weight, crisp */
+.footer-tag { font-size: 1.25rem; line-height: var(--lh-sub); font-weight: var(--fw-medium); }
+.main-footer h4 { font-size: 1.0625rem; line-height: var(--lh-ui); font-weight: var(--fw-bold); }
+.main-footer li a { font-size: 1rem; line-height: 1.8; font-weight: var(--fw-regular); }
+.copyright { font-size: .875rem; line-height: 1.6; font-weight: var(--fw-regular); font-family: var(--font-latin-ui); }
+.toast { font-size: .9375rem; line-height: var(--lh-ui); font-weight: var(--fw-medium); }
+
+/* 13b. PRODUCT GRID — light-grey stage, white cards with soft realistic shadows
+   Title     Tajawal 700, 17px, pure black
+   Subtitle  Tajawal 400, 13px, #777
+   Price     Tajawal 700, 16px, accent deep pink, next to the currency; old price struck-through in grey */
+#perfumes { background: #F2F2F2; }
+#perfumes .section-title { margin-bottom: clamp(32px, 4vw, 48px); }
+.product-grid { gap: clamp(18px, 2vw, 28px); }
+
+.product-card {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .04), 0 10px 30px rgba(0, 0, 0, .07);   /* soft, layered, realistic */
+}
+.product-card:hover {
+  transform: translateY(var(--lift-y));
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .05), 0 22px 44px rgba(0, 0, 0, .13);
+}
+.product-media { position: relative; background: #F7F7F7; aspect-ratio: 1 / 1.05; overflow: hidden; }
+.product-media .card-img { width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; background: transparent; transition: transform .6s cubic-bezier(.2, .7, .2, 1); }
+.product-card:hover .product-media .card-img { transform: scale(1.04); }
+.sale-badge {
+  position: absolute; top: 12px; inset-inline-start: 12px;
+  background: var(--sale); color: #fff;
+  font-size: .75rem; font-weight: 700; line-height: 1;
+  padding: 6px 11px; border-radius: 999px;
+}
+
+.product-info { padding: 20px 20px 22px; gap: 0; }
+.product-card .product-title {
+  font-family: var(--font-en-title);
+  font-size: .9375rem; font-weight: var(--fw-semibold); color: #000;   /* 15px Cinzel semibold / pure black */
+  line-height: 1.5; letter-spacing: var(--track-latin-title); text-transform: uppercase; overflow-wrap: anywhere; margin: 0;
+}
+.product-card .product-desc {
+  font-family: var(--font-latin-ui);
+  font-size: .8125rem; font-weight: var(--fw-regular); color: #777777;  /* 13px / regular / muted grey */
+  line-height: 1.6; letter-spacing: .01em; margin: 6px 0 0;
+}
+.product-footer { margin-top: 18px; padding-top: 16px; border-top: 1px solid #EEEEEE; align-items: center; }
+.price-box { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; }
+.price {
+  font-family: var(--font-latin-ui);
+  font-size: 1rem; font-weight: var(--fw-bold); line-height: 1.3;   /* 16px / bold */
+  color: var(--sale);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.price small { font-size: .875rem; font-weight: 700; margin-inline-start: 6px; margin-right: 0; color: inherit; }
+.price-old { font-size: .8125rem; font-weight: 400; color: #999; text-decoration: line-through; }
+.product-card .add-cart-btn { width: 40px; height: 40px; flex: none; background: #111; }
+.product-card .add-cart-btn:hover { background: var(--sale); transform: scale(1.08); }
+.product-card .add-cart-btn svg { width: 18px; height: 18px; }
+
+@media (max-width: 560px) {
+  .product-info { padding: 14px 14px 16px; }
+  .product-card .product-title { font-size: .875rem; letter-spacing: 2px; }
+  .product-footer { margin-top: 14px; padding-top: 12px; }
+  .price { font-size: .9375rem; }
+}
+
+/* 14. Icon micro-animations
+   Hover on desktop, short tap-triggered state (.is-animating) on touch.
+   Only transform / opacity / filter are animated (GPU friendly).
+   The global prefers-reduced-motion rule at the end of this file disables all of it. */
+.ic-flask, .ic-gift, .ic-gem, .ic-shield, .ic-card, .ic-headset { overflow: visible; }   /* .ic-van stays clipped on purpose */
+
+/* 1) Truck: slides out to the right, fades at the edge, re-enters from the left */
+:is(.feature, .policy, .top-bar):is(:hover, .is-animating) .ic-van-body {
+  animation: ic-truck-pass .7s cubic-bezier(.5, 0, .25, 1) infinite;
+}
+@keyframes ic-truck-pass {
+  0%   { transform: translateX(0);     opacity: 1; }
+  30%  { transform: translateX(15px);  opacity: .45; }
+  42%  { transform: translateX(27px);  opacity: 0; }
+  43%  { transform: translateX(-27px); opacity: 0; }
+  100% { transform: translateX(0);     opacity: 1; }
+}
+
+/* 2) Gift box: lid tilts open, whole icon scales to 1.08 */
+.ic-gift { transition: transform .5s cubic-bezier(.34, 1.56, .64, 1); }
+.ic-gift-lid {
+  transform-box: fill-box;
+  transform-origin: 0% 100%;
+  transition: transform .5s cubic-bezier(.34, 1.56, .64, 1);
+}
+:is(.feature, .policy, .top-bar):is(:hover, .is-animating) .ic-gift { transform: scale(1.08); }
+:is(.feature, .policy, .top-bar):is(:hover, .is-animating) .ic-gift-lid { transform: translateY(-1.5px) rotate(-14deg); }
+
+/* 3) Shield: gentle golden pulse, check mark pops and gets heavier */
+.ic-check { transform-box: fill-box; transform-origin: center; }
+:is(.feature, .policy, .top-bar):is(:hover, .is-animating) :is(.ic-shield, .ic-card) { animation: ic-shield-pulse 1.6s ease-in-out infinite; }
+:is(.feature, .policy, .top-bar):is(:hover, .is-animating) .ic-check  { animation: ic-check-pop 1.6s ease-in-out infinite; }
+@keyframes ic-shield-pulse {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(197, 160, 89, 0)); transform: scale(1); }
+  50%      { filter: drop-shadow(0 0 7px rgba(197, 160, 89, .85)); transform: scale(1.06); }
+}
+@keyframes ic-check-pop {
+  0%, 100% { transform: scale(1);    stroke-width: 1.5; }
+  35%      { transform: scale(1.45); stroke-width: 2.4; stroke: var(--accent-btn); }
+  60%      { transform: scale(1.15); stroke-width: 2;   stroke: var(--accent-btn); }
+}
+
+/* 4) Perfume bottle: gentle shake + mist particles from the nozzle */
+.ic-bottle { transform-box: view-box; transform-origin: 12px 21px; }
+.ic-mist circle {
+  fill: var(--accent-gold);
+  stroke: none;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.ic-mist .m1 { --dx: -5px; --dy: -6px; }
+.ic-mist .m2 { --dx: -1px; --dy: -8px; }
+.ic-mist .m3 { --dx: 5px;  --dy: -6px; }
+.ic-mist .m4 { --dx: 2px;  --dy: -9px; }
+:is(.feature, .policy, .top-bar):is(:hover, .is-animating) .ic-bottle { animation: ic-bottle-shake 1.4s ease-in-out infinite; }
+:is(.feature, .policy, .top-bar):is(:hover, .is-animating) .ic-mist circle { animation: ic-mist 1.4s ease-out infinite; }
+:is(.feature, .policy, .top-bar):is(:hover, .is-animating) .ic-mist .m2 { animation-delay: .15s; }
+:is(.feature, .policy, .top-bar):is(:hover, .is-animating) .ic-mist .m3 { animation-delay: .3s; }
+:is(.feature, .policy, .top-bar):is(:hover, .is-animating) .ic-mist .m4 { animation-delay: .45s; }
+@keyframes ic-bottle-shake {
+  0%, 100% { transform: rotate(0); }
+  20% { transform: rotate(-9deg); }
+  40% { transform: rotate(7deg); }
+  60% { transform: rotate(-5deg); }
+  80% { transform: rotate(3deg); }
+}
+@keyframes ic-mist {
+  0%   { transform: translate(0, 0) scale(.4); opacity: 0; }
+  20%  { opacity: .95; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(1.3); opacity: 0; }
+}
+
+/* 5) Diamond: slow turn, golden ambient glow, facet shimmer, twinkling sparks */
+.ic-gem-body { transform-box: view-box; transform-origin: 12px 12px; }
+.ic-spark {
+  stroke: var(--accent-gold);
+  stroke-width: 1.2;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.policy:is(:hover, .is-animating) .ic-gem { animation: ic-gem-glow 2s ease-in-out infinite; }
+.policy:is(:hover, .is-animating) .ic-gem-body { animation: ic-gem-turn 2s ease-in-out infinite; }
+.policy:is(:hover, .is-animating) .ic-facets { animation: ic-facet-shimmer 2s ease-in-out infinite; }
+.policy:is(:hover, .is-animating) .ic-spark { animation: ic-spark 1.4s ease-in-out infinite; }
+.policy:is(:hover, .is-animating) .ic-spark.s2 { animation-delay: .5s; }
+@keyframes ic-gem-turn {
+  0%, 100% { transform: rotate(0) scaleX(1); }
+  25% { transform: rotate(-7deg) scaleX(.94); }
+  50% { transform: rotate(0) scaleX(1.04); }
+  75% { transform: rotate(7deg) scaleX(.94); }
+}
+@keyframes ic-gem-glow {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(197, 160, 89, 0)); }
+  50%      { filter: drop-shadow(0 0 8px rgba(197, 160, 89, .9)); }
+}
+@keyframes ic-facet-shimmer {
+  0%, 100% { stroke: var(--accent-dark-gold); }
+  50%      { stroke: #E0BB66; }
+}
+@keyframes ic-spark {
+  0%, 100% { opacity: 0; transform: scale(0) rotate(0); }
+  40%, 60% { opacity: 1; transform: scale(1) rotate(45deg); }
+}
+
+/* 6) Headset: wobbles side to side with a soft golden pulsing glow */
+.ic-headset-body { transform-box: view-box; transform-origin: 12px 20px; }
+:is(.feature, .policy, .top-bar):is(:hover, .is-animating) .ic-headset { animation: ic-headset-glow 1.4s ease-in-out infinite; }
+:is(.feature, .policy, .top-bar):is(:hover, .is-animating) .ic-headset-body { animation: ic-headset-wobble 1.4s ease-in-out infinite; }
+@keyframes ic-headset-wobble {
+  0%, 100% { transform: rotate(0); }
+  20% { transform: rotate(-9deg); }
+  40% { transform: rotate(8deg); }
+  60% { transform: rotate(-5deg); }
+  80% { transform: rotate(3deg); }
+}
+@keyframes ic-headset-glow {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(197, 160, 89, 0)); }
+  50%      { filter: drop-shadow(0 0 7px rgba(197, 160, 89, .85)); }
+}
+
+/* 14b. Header on beige #D2C4A8 — colours for everything that sits on the header background */
+.main-header { /* Logo colour: inherits the SAME --lf / --shine-filter as the footer logo (defined in :root) -> identical vivid gold.
+                  Only the assembly glow colour is switched off: no tinted drop-shadow can appear around the header logo. */
+               --lg: transparent; }
+.main-header .logo-mark { height: 5rem; }
+.main-header .nav-menu a { color: var(--header-ink); }
+.main-header .nav-menu a:hover { color: var(--header-gold); }
+.main-header .nav-menu a.active { color: var(--header-ink-strong); }
+.main-header .nav-menu a::after { background: linear-gradient(90deg, #A8823F, var(--header-gold-line), #F3DFAE); }
+.main-header .icon-btn { color: var(--header-ink); }
+.main-header .icon-btn:hover { background: rgba(233, 223, 208, .10); }
+.main-header .icon-btn:not(.menu-toggle):hover,
+.main-header .icon-btn:not(.menu-toggle):focus-visible { color: var(--header-gold); }
+.main-header .icon-btn:not(.menu-toggle):is(:hover, :focus-visible) svg {
+  stroke: url(#gold-grad) var(--header-gold);   /* light gold gradient: readable on dark brown */
+  filter: drop-shadow(0 0 4px rgba(197, 160, 89, .45));
+}
+.main-header .cart-count { background-color: var(--accent-btn); color: #fff; }
+.main-header .logo-text { color: var(--accent-gold); text-shadow: none; }
+.main-header .logo:is(:hover, :focus-visible) .logo-text { color: #F3DFAE; text-shadow: none; }
+.main-header .logo:is(:hover, :focus-visible) .logo-mark {
+  filter: none;                                          /* no halo / glow / aura on hover: motion only */
+}
+.main-header :focus-visible { outline-color: var(--header-gold); }
+
+/* 2b. Top bar — infinite marquee ticker
+   Markup (built by script.js, see renderTopBar):
+     .top-bar > .ticker-track > .ticker-group x2 (identical, the 2nd is aria-hidden) > .ticker-item x N
+   Each group is at least as wide as the bar, so the track is always full. The track is two identical groups wide and moves
+   exactly -50% (one group), so the loop point is invisible. The bar is forced LTR so the layout origin is the left edge and
+   the content slides right -> left; each item keeps direction: rtl for the Arabic text. */
+.top-bar {
+  display: block;
+  direction: ltr;
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 8px 0;
+  text-align: initial;
+  font-family: var(--font-ar);               /* IBM Plex Sans Arabic */
+  font-weight: var(--fw-medium);
+}
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 20s linear infinite;
+  will-change: transform;
+}
+.top-bar:hover .ticker-track { animation-play-state: paused; }   /* stop to read / click */
+.ticker-group { display: flex; flex: none; align-items: center; }
+.ticker-item {
+  display: inline-flex; align-items: center; gap: 8px;           /* icon centred on the text */
+  direction: rtl;
+  flex: none;
+  padding: 0 1.5rem;
+}
+.ticker-item::after {                                               /* quiet separator between repeats */
+  content: ""; width: 5px; height: 5px; margin-inline-start: 3rem;
+  background: var(--accent-dark-gold); transform: rotate(45deg); flex: none;
+}
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+/* Reduced motion: no scrolling, show one centred message */
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track { width: 100%; justify-content: center; }
+  .ticker-group[aria-hidden="true"], .ticker-group .ticker-item:not(:first-child) { display: none; }
+  .ticker-item::after { display: none; }
+}
+
+/* 14c. HD logo rendering (header + footer marks)
+   Asset: script.js (resolveHDLogo) loads the best file that exists: logo.svg (vector) > logo-hd.png > long.png > embedded copy,
+          and tags every .logo-mark with data-kind="svg" | "raster".
+   Size : the box is sized by an explicit height (header 5rem / 3.75rem on phones, footer in px) and the logo's NATIVE aspect
+          ratio, so the image can only ever be scaled uniformly (object-fit: contain, never stretched).
+   Solid: container and base image forced to opacity 1 at rest. The base is released only while the hover assembly runs
+          (an !important rule would otherwise beat the animation). The three assembly layers are invisible at rest by design.
+   Sharp: GPU layer, no backface flicker. optimize-contrast / crisp-edges are applied to the VECTOR logo only: on a bitmap
+          that is shown smaller or at a fractional scale, crisp-edges means nearest-neighbour sampling, which is exactly what
+          breaks thin gold hairlines into stair-steps. Bitmaps keep the browser's high-quality filtering and are pre-scaled
+          to the exact device-pixel size by script.js (sharpenLogos). */
+.logo, .logo-mark { opacity: 1 !important; }
+.logo-mark {
+  aspect-ratio: 512 / 634;                       /* native ratio of the logo artwork */
+  width: auto;
+  transform: translateZ(0);
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+}
+.logo:is(:hover, :focus-visible) .logo-mark { transform: translateZ(0) scale(1.04); }
+.logo-mark .brand-logo,
+.logo-mark .brand-logo-shine,
+.logo-mark .brand-logo-layer {
+  width: 100%; height: 100%;
+  max-width: 100%; max-height: 100%;             /* never exceeds the box */
+  object-fit: contain;                           /* keeps proportions: no stretch blur */
+  image-rendering: auto;                         /* bitmap: smooth, high-quality sampling */
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+}
+.logo-mark[data-kind="svg"] .brand-logo,
+.logo-mark[data-kind="svg"] .brand-logo-shine,
+.logo-mark[data-kind="svg"] .brand-logo-layer {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+.logo-mark .brand-logo { transform: translateZ(0); }
+.logo:not(:hover):not(:focus-visible) .brand-logo { opacity: 1 !important; visibility: visible !important; }
+/* Header = footer: same classes, same asset, same solid state. Container and base image are always visible; the base image's
+   opacity is left to the hover assembly only (an !important there would freeze the animation), and it ends at 1. */
+.main-header .logo, .main-header .logo-mark, .main-header .brand-logo { visibility: visible !important; }
+.main-header .logo, .main-header .logo-mark { opacity: 1 !important; filter: none; }
+.main-header .logo-mark .brand-logo { filter: var(--lf); }          /* identical to .main-footer .brand-logo */
+.main-header .logo:is(:hover, :focus-visible) .logo-mark { filter: none; }
+
+/* 15. Responsive */
+@media (max-width: 1100px) {
+  .grid-5 { grid-template-columns: repeat(3, 1fr); }
+  .nav-menu ul { gap: 20px; }
+}
+/* Tablet landscape: tighter header so logo + 6 links + icons never overflow */
+@media (min-width: 861px) and (max-width: 1100px) {
+  .header-container { gap: 12px; }
+  .nav-menu ul { gap: 14px; }
+  .main-header .logo-text { font-size: .95rem; letter-spacing: .06em; }
+}
+
+@media (max-width: 860px) {
+  .menu-toggle { display: grid; }
+  .nav-menu {
+    position: absolute; top: calc(100% + 10px); left: -5.5%; right: -5.5%;
+    background: var(--header-bg); border-bottom: 1px solid rgba(143, 107, 42, .35);
+    max-height: 0; overflow: hidden; transition: max-height .3s ease;
+  }
+  .nav-menu.open { max-height: 380px; }
+  .nav-menu ul { flex-direction: column; gap: 0; padding: 8px 5.5% 16px; }
+  .nav-menu a { display: block; padding: 12px 0; border-bottom: 1px solid rgba(233, 223, 208, .16); }
+  .nav-menu a::after { bottom: -1px; }
+
+  .hero-track { min-height: 0; }
+  .hero-slide { grid-template-columns: 1fr; gap: 0; }
+  .hero-art { order: -1; min-height: 240px; padding-top: 16px; }
+  .hero-art img { max-height: 260px; }
+  .hero-copy { padding-bottom: 46px; }
+  .hero-arrow { width: 38px; height: 38px; margin-top: -19px; top: 120px; }
+  .hero-arrow svg { width: 19px; height: 19px; }
+  .hero-next { left: 10px; }
+  .hero-prev { right: 10px; }
+
+  .features-grid { grid-template-columns: repeat(2, 1fr); row-gap: 20px; }
+  .feature:nth-child(3) { border-right: 0; }
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: 1fr; }
+  .story-grid { grid-template-columns: 1fr; }
+  .story-art { order: -1; padding-top: 20px; }
+  .policies-grid { grid-template-columns: repeat(2, 1fr); }
+  .policy:nth-child(3) { border-right: 0; }
+  .footer-links { gap: 18px; }
+}
+@media (max-width: 560px) {
+  .grid-5 { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .logo-text { font-size: 1rem; }
+  .logo-mark { height: 52px; }
+  .main-header .logo-mark { height: 3.75rem; }
+  .main-header .logo { gap: 8px; padding: 2px 0; }
+  .main-header .logo .logo-text { font-size: .82rem; letter-spacing: .08em; }
+  .header-container { gap: 8px; }
+  .header-icons { gap: 2px; }
+  .icon-btn { width: 38px; height: 38px; }
+  .section-title { font-size: 1.5rem; }
+  .section-title::before, .section-title::after { width: 28px; }
+  .hero-brand { font-size: 1.7rem; }
+  .hero-copy .hero-logo-img { height: 100px; }
+  .top-bar { font-size: .8125rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

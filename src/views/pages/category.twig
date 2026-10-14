@@ -1,0 +1,52 @@
+{#
+  pages/category.twig — products grid with filters (luxury layout).
+  Salla supplies `products` and `page.title` to a listing page. Cards = <salla-product-card>,
+  filters = <salla-filters>. New classes are prefixed `lx-` and scoped below.
+#}
+{% extends "layouts.master" %}
+
+{% block content %}
+<style>
+  .lx-listing {
+    --color-primary: var(--accent-btn);
+    --color-primary-dark: var(--accent-dark-gold);
+    --color-primary-light: var(--accent-gold);
+    --color-primary-reverse: #fff;
+    font-family: var(--font-family);
+    color: var(--text-primary);
+  }
+  .lx-crumbs { padding-block: 18px 0; font-size: .85rem; color: var(--text-muted); }
+  .lx-layout { display: grid; grid-template-columns: 270px minmax(0, 1fr); gap: clamp(20px, 3vw, 40px); align-items: start; }
+  .lx-filters { position: sticky; top: calc(var(--header-h, 84px) + 16px); padding: 18px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius); box-shadow: var(--shadow); }
+  .lx-filters__title { margin: 0 0 12px; font-size: 1.05rem; }
+  .lx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; }
+  .lx-empty { text-align: center; padding: clamp(40px, 8vw, 90px) 20px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius); color: var(--text-muted); font-size: 1.1rem; }
+  @media (max-width: 900px) { .lx-layout { grid-template-columns: 1fr; } .lx-filters { position: static; } }
+</style>
+
+<div class="lx-listing">
+  <div class="container section">
+    <nav class="lx-crumbs"><salla-breadcrumb></salla-breadcrumb></nav>
+    <h1 class="section-title">{{ page.title|raw }}</h1>
+
+    <div class="lx-layout">
+      <aside class="lx-filters">
+        <h2 class="lx-filters__title">تصفية المنتجات</h2>
+        <salla-filters></salla-filters>
+      </aside>
+
+      <div class="lx-results">
+        {% if products|length %}
+          <div class="lx-grid">
+            {% for product in products %}
+              <salla-product-card product='{{ product|json_encode }}'></salla-product-card>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="lx-empty">{{ trans('pages.categories.no_products') }}</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

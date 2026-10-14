@@ -1,0 +1,23 @@
+{
+  "name": "my-salla-starter-theme",
+  "version": "1.0.0",
+  "description": "Salla Twilight theme starter",
+  "private": true,
+  "scripts": {
+    "dev": "webpack --mode development --watch",
+    "build": "webpack --mode production",
+    "salla:dev": "salla theme preview",
+    "salla:publish": "npm run build && salla theme publish"
+  },
+  "dependencies": {
+    "@salla.sa/twilight": "latest"
+  },
+  "devDependencies": {
+    "css-loader": "^6.8.1",
+    "mini-css-extract-plugin": "^2.7.6",
+    "sass": "^1.69.0",
+    "sass-loader": "^13.3.2",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
+  }
+}

@@ -1,0 +1,50 @@
+<!-- 1. الشريط العلوي -->
+{% if theme.settings.get('announcement_enabled') %}
+<div class="top-bar" id="top-bar" aria-label="إعلان الشحن">
+  <div class="ticker-track" id="ticker-track">
+    <span class="ticker-item">
+      <span>{{ theme.settings.get('announcement_text') }}</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 12H4M12 4v16"/></svg>
+    </span>
+  </div>
+</div>
+{% endif %}
+
+{# store.logo first, then the custom setting, then the bundled file #}
+{% set logo_src = store.logo ?: theme.settings.get('store_logo') ?: ('images/long.png' | asset) %}
+
+<!-- 2. الهيدر والقائمة -->
+<header class="main-header">
+  <div class="container header-container">
+    <a href="{{ store.url }}" class="logo" id="logo" aria-label="{{ store.name }}">
+      <span class="logo-mark">
+        <img class="brand-logo" src="{{ logo_src }}" alt="{{ store.name }}" decoding="async" fetchpriority="high">
+        <img class="brand-logo-shine" src="{{ logo_src }}" alt="" aria-hidden="true" decoding="async">
+      </span>
+      <span class="logo-text">{{ store.name }}</span>
+    </a>
+
+    <!-- القائمة الديناميكية -->
+    <nav class="nav-menu" id="nav-menu" aria-label="القائمة الرئيسية">
+      <ul id="nav-list">
+        {% set nav_items = menus.main ?? menus ?? category_tree ?? [] %}
+        {% for item in nav_items %}
+          <li>
+            <a href="{{ item.url }}" class="{{ item.is_active ? 'active' : '' }}" {% if item.is_new_window %}target="_blank" rel="noopener"{% endif %}>
+              {{ item.title ?? item.name }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+    <div class="header-icons">
+      <button class="icon-btn" id="search-btn" aria-label="بحث" onclick="salla.event.dispatch('search::open')"></button>
+      <salla-user-menu class="icon-btn" id="account-btn"></salla-user-menu>
+      <salla-cart-summary class="icon-btn" id="cart-btn" show-count="true"></salla-cart-summary>
+      <button class="icon-btn menu-toggle" id="menu-toggle" aria-label="القائمة" aria-expanded="false" aria-controls="nav-menu"></button>
+    </div>
+  </div>
+</header>
+
+<salla-search></salla-search>

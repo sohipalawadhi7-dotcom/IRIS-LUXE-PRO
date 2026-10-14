@@ -1,0 +1,177 @@
+{% extends "layouts.master" %}
+
+{% block content %}
+
+  <!-- 3. البانر الرئيسي -->
+  {% set hero_slides = theme.settings.get('hero_slides') %}
+  {% if hero_slides is not empty %}
+  <section class="hero-section" aria-roledescription="carousel" aria-label="العروض الرئيسية">
+    <div class="container">
+      <div class="hero-track" id="hero-slides">
+        {% for slide in hero_slides %}
+        <div class="hero-slide {% if loop.first %}is-active{% endif %}">
+          <div class="hero-art">
+            <img src="{{ slide.image }}" alt="{{ slide.title|default('') }}">
+          </div>
+          <div class="hero-copy">
+            <h1 class="hero-brand">{{ store.name }}</h1>
+            {% if slide.title %}<h2 class="hero-title">{{ slide.title }}</h2>{% endif %}
+            {% if slide.sub_title %}<p class="hero-text">{{ slide.sub_title }}</p>{% endif %}
+            {% if slide.btn_text %}
+              <a href="{{ slide.btn_url|default('/products') }}" class="btn">{{ slide.btn_text }}</a>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <button class="hero-arrow hero-next" id="hero-next" type="button" aria-label="الشريحة التالية"></button>
+    <button class="hero-arrow hero-prev" id="hero-prev" type="button" aria-label="الشريحة السابقة"></button>
+    <div class="hero-dots" id="hero-dots" role="tablist" aria-label="شرائح العرض">
+      {% for slide in hero_slides %}
+        <button class="dot" role="tab" aria-selected="{{ loop.first ? 'true' : 'false' }}" data-index="{{ loop.index0 }}"></button>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- 4. المميزات -->
+  <section class="features-section">
+    <div class="container features-grid" id="features-container">
+      <div class="feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+        <h3>شحن سريع</h3><p>توصيل لجميع مناطق المملكة</p>
+      </div>
+      <div class="feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <h3>ضمان الجودة</h3><p>منتجات أصلية 100%</p>
+      </div>
+      <div class="feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        <h3>دفع آمن</h3><p>طرق دفع متعددة وآمنة</p>
+      </div>
+      <div class="feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18.364 5.636a9 9 0 010 12.728m-2.829-2.829a5 5 0 000-7.07m-4.242 0a5 5 0 000 7.07M6.343 6.343a9 9 0 000 12.728"/></svg>
+        <h3>دعم 24/7</h3><p>فريقنا في خدمتك دائماً</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. تسوق حسب الفئة -->
+  {% set categories = categories|default([]) %}
+  {% if categories|length %}
+  <section class="section" id="categories">
+    <div class="container">
+      <h2 class="section-title">تسوق حسب الفئة</h2>
+      <div class="grid grid-4" id="categories-container">
+        {% for category in categories %}
+        <a href="{{ category.url }}" class="card category-card">
+          <img class="card-img" src="{{ category.image }}" alt="{{ category.name }}" loading="lazy">
+          <div class="card-body">
+            <span class="product-title">{{ category.name }}</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5l7 7-7 7"/></svg>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  {% endif %}
+
+  <!-- 6. الأكثر مبيعاً -->
+  {% set products = products|default([]) %}
+  {% if products|length %}
+  <section class="section" id="perfumes">
+    <div class="container">
+      <h2 class="section-title">الأكثر مبيعاً</h2>
+      <div class="grid grid-5 product-grid" id="bestsellers-container">
+        {% for product in products %}
+        <div class="card product-card">
+          <a href="{{ product.url }}"><img class="card-img" src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy"></a>
+          <div class="product-info">
+            <h3 class="product-title"><a href="{{ product.url }}">{{ product.name }}</a></h3>
+            {% if product.subtitle %}<p class="product-desc">{{ product.subtitle }}</p>{% endif %}
+            <div class="product-footer">
+              <span class="price">{{ product.price }} <small>{{ store.currency.symbol }}</small></span>
+              <salla-add-product-button class="add-cart-btn" aria-label="أضف {{ product.name }} إلى السلة"
+                {{ product.is_require_shipping ? 'required-shipping' : '' }}
+                amount="{{ product.base_currency_price }}"
+                product-status="{{ product.status }}"
+                product-type="{{ product.type }}"
+                product-id="{{ product.id }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>
+              </salla-add-product-button>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  {% endif %}
+
+  <!-- 7. مجموعات الهدايا -->
+  {% set collections = collections|default([]) %}
+  {% if collections|length %}
+  <section class="section" id="collections">
+    <div class="container">
+      <div class="gifts-box">
+        <h2 class="section-title">مجموعات الهدايا الفاخرة</h2>
+        <p class="section-subtitle">اختر من مجموعاتنا الفاخرة واجعل لكل مناسبة ذكرى لا تُنسى</p>
+        <div class="grid grid-3" id="giftsets-container">
+          {% for collection in collections %}
+          <a href="{{ collection.url }}" class="card gift-card">
+            <img class="card-img" src="{{ collection.image }}" alt="{{ collection.name }}" loading="lazy">
+            <h3 class="product-title">{{ collection.name }}</h3>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {% endif %}
+
+  <!-- 8. قصة العلامة -->
+  <section class="story-section" id="about">
+    <div class="container story-grid" id="brand-story">
+      <div class="story-art">
+        {% if theme.settings.get('story_image') %}
+          <img src="{{ theme.settings.get('story_image') }}" alt="قصة {{ store.name }}">
+        {% else %}
+          <img src="{{ 'images/long.png' | asset }}" alt="قصة {{ store.name }}">
+        {% endif %}
+      </div>
+      <div class="story-copy">
+        <h2><span class="name">{{ store.name }}</span> {{ theme.settings.get('story_title')|default('قصتنا') }}</h2>
+        <p>{{ theme.settings.get('story_text') }}</p>
+        <a href="{{ theme.settings.get('story_link')|default(store.url) }}" class="btn btn-sm">تعرف علينا أكثر</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. شارات الثقة والسياسات -->
+  <section class="policies-section">
+    <div class="container policies-grid" id="policies-container">
+      <div class="policy">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        <div><h4>سياسة الإرجاع</h4><p>إرجاع خلال 14 يوم</p></div>
+      </div>
+      <div class="policy">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <div><h4>الدفع عند الاستلام</h4><p>متاح في جميع المناطق</p></div>
+      </div>
+      <div class="policy">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+        <div><h4>توصيل سريع</h4><p>خلال 2-5 أيام عمل</p></div>
+      </div>
+      <div class="policy">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        <div><h4>دفع آمن</h4><p>تشفير SSL كامل</p></div>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}

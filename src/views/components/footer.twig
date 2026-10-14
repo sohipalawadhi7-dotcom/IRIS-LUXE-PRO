@@ -1,0 +1,38 @@
+<footer class="main-footer" id="contact">
+  <div class="container footer-grid" id="footer-container">
+    <!-- عمود العلامة -->
+    <div>
+      <span class="logo-text">{{ store.name }}</span>
+      <p class="footer-tag">حيث تلتقي الفخامة بالأصالة</p>
+      <div class="socials">
+        {% for social in store.social %}
+          {% if social.url %}
+            <a href="{{ social.url }}" target="_blank" rel="noopener" aria-label="{{ social.name }}">
+              {% if social.icon %}{{ social.icon|raw }}{% else %}<i class="sicon-{{ social.name|lower }}"></i>{% endif %}
+            </a>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- أعمدة روابط الفوتر -->
+    {% for footer_menu in (footer_menus ?? menus ?? [])|slice(0, 3) %}
+      {% set footer_links = footer_menu.items ?? footer_menu.children ?? [] %}
+      {% if footer_links|length %}
+      <div>
+        <h4>{{ footer_menu.title ?? footer_menu.name }}</h4>
+        <ul>
+          {% for item in footer_links %}
+            <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <div class="copyright" id="copyright">
+    {{ theme.settings.get('copyright_text')|default('جميع الحقوق محفوظة ' ~ store.name) }}
+    © {{ 'now'|date('Y') }}
+  </div>
+</footer>
