@@ -1,8 +1,0 @@
-{
-  "name": "salla-theme",
-  "version": "1.0.0",
-  "private": true,
-  "devDependencies": {
-    "laravel-mix": "^6.0.49"
-  }
-}
